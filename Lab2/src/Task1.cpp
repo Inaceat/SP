@@ -9,8 +9,14 @@ void Task1::Do()
 	std::string fileName;
 	std::cin >> fileName;
 
+	std::string notepadExe = "C:\\Windows\\notepad.exe ";
+	notepadExe += " \"" + fileName + "\"";
 
-	const std::string notepadExe = "C:\\Windows\\notepad.exe";
+	STARTUPINFOA si;
+	si.cb = sizeof(si);
 
-	WinExec((notepadExe + " \"" + fileName + "\"").c_str(), SW_SHOWNORMAL);
+	PROCESS_INFORMATION pi;
+	CreateProcessA(notepadExe.c_str(), NULL, NULL, NULL, FALSE, DETACHED_PROCESS, NULL, NULL, &si, &pi);
+
+	//WinExec((notepadExe + " \"" + fileName + "\"").c_str(), SW_SHOWNORMAL);
 }
