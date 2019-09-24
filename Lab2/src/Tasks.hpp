@@ -18,3 +18,15 @@ class Task3
 public:
 	static void Do();
 };
+
+class Task4
+{
+public:
+	static void Do();
+};
+
+class Task5
+{
+public:
+	static void Do();
+};

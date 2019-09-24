@@ -27,6 +27,8 @@
     <ClCompile Include="src\Task1.cpp" />
     <ClCompile Include="src\Task2.cpp" />
     <ClCompile Include="src\Task3.cpp" />
+    <ClCompile Include="src\Task4.cpp" />
+    <ClCompile Include="src\Task5.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h" />
