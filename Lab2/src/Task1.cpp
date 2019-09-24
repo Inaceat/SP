@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#include <string>
-
 #include "Tasks.hpp"
 
 void Task1::Do()
