@@ -2,7 +2,6 @@
 
 #include "Tasks.hpp"
 #include <minwinbase.h>
-#include <minwinbase.h>
 
 void Task1::Do()
 {
@@ -11,11 +10,15 @@ void Task1::Do()
 	std::string fileName;
 	std::cin >> fileName;
 
-	//std::string notepadExe = "C:\\Windows\\notepad.exe ";
-	//notepadExe += " \"" + fileName + "\"";
+	fileName = "\"" + fileName + "\"";
 
-	LPCSTR appName = "C:\\Windows\\notepad.exe";
-	LPSTR cLine = const_cast<char*>("C:\\Windows\\notepad.exe E:\\Documents\\Coding\\Projects\\SP\\Lab2\\src\\Task1.cpp");
+
+	std::string appName = "C:\\Windows\\notepad.exe";
+
+
+	auto fullCommandLine = appName + " " + fileName;
+	
+	LPSTR cLine = const_cast<char*>(fullCommandLine.c_str());
 
 
 	STARTUPINFOA si;
@@ -26,6 +29,4 @@ void Task1::Do()
 	ZeroMemory(&pi, sizeof(pi));
 
 	CreateProcessA(NULL, cLine, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
-
-	//WinExec((notepadExe + " \"" + fileName + "\"").c_str(), SW_SHOWNORMAL);
 }
