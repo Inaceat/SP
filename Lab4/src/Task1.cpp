@@ -2,62 +2,116 @@
 
 #include "Tasks.hpp"
 
+//Params for SumWorker thread, ptr to it should be cleared in child thread
+struct MultithreadArraySumParams
+{
+	MultithreadArraySumParams(int* array, int startIndex, int sizeOfPart, CRITICAL_SECTION* resultChangeSection, int* resultAccumulator):
+		Array(array), StartIndex(startIndex), SizeOfPart(sizeOfPart), ResultChangeSection(resultChangeSection), ResultAccumulator(resultAccumulator)
+	{}
 
-// Глобальные (т.е. разделяемые всеми потоками) переменные: 
-// N - размер массива; K - количество потоков; 
-// size - размер "проции" массива для обработки одним потоком 
-// Sum - накопительная переменная для суммы элементов массива Array 
-unsigned N=0,K=0,size=0; 
-unsigned Sum=0; 
-unsigned* Array = NULL; 
+	int* Array;
+	int StartIndex;
+	int SizeOfPart;
+
+	CRITICAL_SECTION* ResultChangeSection;
+	int* ResultAccumulator;
+};
 
 // Функция, запускаемая в потоках 
-DWORD WINAPI SummWorker(LPVOID lpStartNumber) 
+DWORD WINAPI SummWorker(LPVOID params) 
 { 
-	unsigned st = *((unsigned*)lpStartNumber); 
-	unsigned partSum = 0;// частичная сумма массива 
+	auto threadParams = (MultithreadArraySumParams*)params;
 
-	for(unsigned i = size * st; i < size * (st + 1); i++)
-		partSum += Array[i]; 
+	unsigned partSum = 0; 
 
-	Sum = Sum + partSum; 
+	for(int i = 0; i < threadParams->SizeOfPart; i++)
+		partSum += threadParams->Array[threadParams->StartIndex + i]; 
 
-	return 0; 
+
+EnterCriticalSection(threadParams->ResultChangeSection);
+	
+	*(threadParams->ResultAccumulator) += partSum;
+
+LeaveCriticalSection(threadParams->ResultChangeSection);
+
+
+	delete threadParams;
+
+	return 0;
 }
 
 
 void Task1::Do()
 {
-	HANDLE* hThreads = NULL; 
-	system("chcp 1251");
+	int arraySize;
+	int threadsNumber;
 
 	std::cout << "Количество элементов массива?" << std::endl << ":";
-	std::cin >> N;
+	std::cin >> arraySize;
 
 	std::cout << "Количество потоков программы?" << std::endl << ":";
-	std::cin >> K;
+	std::cin >> threadsNumber;
 
-	if ( (N<=0) || (K<=0) || (K>N) || (K>63) )
+	if ( (arraySize <= 0) || (threadsNumber <= 0) || (threadsNumber > arraySize) || (threadsNumber > 63) )
 	{
 		std::cerr << "Ошибка параметров. Завершение." << std::endl;
 		return; 
 	}
 	
-	Array = new unsigned [N];
-	hThreads = new HANDLE[K]; 
-	size = N/K;
 
-	//Для теста заполняем массив последовательными элементами 
-	for(unsigned i = 0; i < N; i++) 
-		Array[i] = i;
-	
+	int* numbersArray = new int[arraySize];
+
+	//Для теста заполняем массив последовательными элементами, [1, arraySize]
+	for(int i = 1; i < arraySize + 1; i++) 
+		numbersArray[i - 1] = i;
+
+
+	int threadArrayPartSize = arraySize / threadsNumber;
+	int lastArrayPartSize = arraySize % threadsNumber;
+
+
+	CRITICAL_SECTION resultProtectionCS;
+	InitializeCriticalSection(&resultProtectionCS);
+
+	int* result = new int;
+	*result = 0;
+
+
+	HANDLE* threadHandlesArray = new HANDLE[threadsNumber + 1];
+
 	// Поиск и печать суммы элементов массива в K потоков 
-	for(unsigned i = 0; i < K; i++)
+	for(int i = 0; i < threadsNumber; i++)
 	{
-		hThreads[i] = CreateThread(NULL,0,SummWorker,(LPVOID)&i,0,NULL);
-	} 
-	
-	WaitForMultipleObjects(K, hThreads, TRUE, INFINITE);
+		auto newThreadParams = new MultithreadArraySumParams(numbersArray, i * threadArrayPartSize, threadArrayPartSize, &resultProtectionCS, result);
 
-	std::cout << "Сумма элементов массива равна " << Sum << std::endl;
+		threadHandlesArray[i] = CreateThread(NULL, 0, SummWorker, (LPVOID)newThreadParams, 0, NULL);
+	}
+
+	if (0 != lastArrayPartSize)
+	{
+		auto lastThreadParams = new MultithreadArraySumParams(numbersArray, threadsNumber * threadArrayPartSize, lastArrayPartSize, &resultProtectionCS, result);
+
+		threadHandlesArray[threadsNumber] = CreateThread(NULL, 0, SummWorker, (LPVOID)lastThreadParams, 0, NULL);
+	}
+	
+	WaitForMultipleObjects(threadsNumber, threadHandlesArray, TRUE, INFINITE);
+
+	std::cout << "Сумма элементов массива равна " << *result << std::endl;
+
+
+	//Closing CS
+	DeleteCriticalSection(&resultProtectionCS);
+
+	//Closing threads
+	for(int i = 0; i < threadsNumber; i++)
+		CloseHandle(threadHandlesArray[i]);
+
+	if (0 != lastArrayPartSize)
+		CloseHandle(threadHandlesArray[threadsNumber]);
+
+	delete[] threadHandlesArray;
+
+	//Clearing numbers
+	delete result;
+	delete[] numbersArray;
 }
