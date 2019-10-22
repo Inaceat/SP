@@ -18,7 +18,7 @@ struct MultithreadArraySumParams
 };
 
 // Функция, запускаемая в потоках 
-DWORD WINAPI SummWorker(LPVOID params) 
+DWORD WINAPI SumWorkerCS(LPVOID params) 
 { 
 	auto threadParams = (MultithreadArraySumParams*)params;
 
@@ -84,14 +84,14 @@ void Task1::Do()
 	{
 		auto newThreadParams = new MultithreadArraySumParams(numbersArray, i * threadArrayPartSize, threadArrayPartSize, &resultProtectionCS, result);
 
-		threadHandlesArray[i] = CreateThread(NULL, 0, SummWorker, (LPVOID)newThreadParams, 0, NULL);
+		threadHandlesArray[i] = CreateThread(NULL, 0, SumWorkerCS, (LPVOID)newThreadParams, 0, NULL);
 	}
 
 	if (0 != lastArrayPartSize)
 	{
 		auto lastThreadParams = new MultithreadArraySumParams(numbersArray, threadsNumber * threadArrayPartSize, lastArrayPartSize, &resultProtectionCS, result);
 
-		threadHandlesArray[threadsNumber] = CreateThread(NULL, 0, SummWorker, (LPVOID)lastThreadParams, 0, NULL);
+		threadHandlesArray[threadsNumber] = CreateThread(NULL, 0, SumWorkerCS, (LPVOID)lastThreadParams, 0, NULL);
 	}
 	
 	WaitForMultipleObjects(threadsNumber, threadHandlesArray, TRUE, INFINITE);
