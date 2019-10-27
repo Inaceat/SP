@@ -3,21 +3,23 @@
 #include "Tasks.hpp"
 
 
-void PrintCurrentDir()
+std::string GetCurrentWindowsDirectory()
 {
 	int currentDirectoryCharsCount = GetCurrentDirectory(0, NULL);
 	auto currentDirectoryBuffer = new TCHAR[currentDirectoryCharsCount];
 
-
 	GetCurrentDirectory(currentDirectoryCharsCount, currentDirectoryBuffer);
-
 
 	std::string currentDirectoryPath(currentDirectoryBuffer, currentDirectoryBuffer + currentDirectoryCharsCount - 1);//-1 cause of \0
 
-	std::cout << "You are here :" << std::endl << "--->  " << currentDirectoryPath << std::endl;
-
-
 	delete[] currentDirectoryBuffer;
+
+	return currentDirectoryPath;
+}
+
+void PrintCurrentDir()
+{
+	std::cout << "You are here :" << std::endl << "--->  " << GetCurrentWindowsDirectory() << std::endl;	
 }
 
 

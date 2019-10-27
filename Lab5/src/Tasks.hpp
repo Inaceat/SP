@@ -18,3 +18,6 @@ class Task3
 public:
 	static void Do();
 };
+
+
+std::string GetCurrentWindowsDirectory();
