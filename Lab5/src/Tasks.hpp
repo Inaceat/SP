@@ -20,4 +20,12 @@ public:
 };
 
 
-std::string GetCurrentWindowsDirectory();
+#ifndef UNICODE
+	typedef std::string StdString;
+	#define OUTPUT std::cout
+#else
+	typedef std::wstring StdString;
+	#define OUTPUT std::wcout
+#endif
+
+StdString GetCurrentWindowsDirectory();
