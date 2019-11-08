@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\ChategClient.cpp" />
+    <ClCompile Include="src\ChategServer.cpp" />
     <ClCompile Include="src\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -26,8 +28,11 @@
     <ClCompile Include="src\Lab7.cpp" />
     <ClCompile Include="src\Task1.cpp" />
     <ClCompile Include="src\Task2.cpp" />
+    <ClCompile Include="src\Task3.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ChategClient.hpp" />
+    <ClInclude Include="src\ChategServer.hpp" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\targetver.h" />
     <ClInclude Include="src\Tasks.hpp" />
