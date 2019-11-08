@@ -84,7 +84,7 @@ void Task2::Do()
 
 
 	WaitForSingleObject(pi.hProcess, INFINITE);
-
+	std::cout << CloseHandle(pi.hProcess);
 
 	CloseHandle(childInputRead);
 	CloseHandle(childInputWrite);
