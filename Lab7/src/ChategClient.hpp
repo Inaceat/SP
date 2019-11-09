@@ -1,5 +1,5 @@
 ﻿#pragma once
-
+#include "ChategServer.hpp"
 
 
 class ChategClient
@@ -14,8 +14,13 @@ public:
 
 
 private:
+	bool TryFindServer();
+
+
+private:
 	std::string _mailslotName = "\\\\.\\mailslot\\ChAtEg";
 
 	HANDLE _mailslotWrite;
-	HANDLE _mailslotRead;
+
+	ChategServer* _server = nullptr;
 };
