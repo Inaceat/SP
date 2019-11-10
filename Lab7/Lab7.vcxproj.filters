@@ -16,6 +16,9 @@
     <Filter Include="Connections">
       <UniqueIdentifier>{855bb002-e894-4f65-a924-868edc9f2131}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Chateg">
+      <UniqueIdentifier>{7a62ebde-8b90-4aff-9191-52bd3c0605d5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -34,13 +37,13 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ChategClient.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChategServer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Chateg</Filter>
     </ClCompile>
     <ClCompile Include="src\ChategMessage.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Chateg</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChategServer.cpp">
+      <Filter>Chateg</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -53,17 +56,17 @@
     <ClInclude Include="src\Tasks.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChategClient.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChategServer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\MailslotConnection.hpp">
       <Filter>Connections</Filter>
     </ClInclude>
+    <ClInclude Include="src\ChategClient.hpp">
+      <Filter>Chateg</Filter>
+    </ClInclude>
     <ClInclude Include="src\ChategMessage.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Chateg</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChategServer.hpp">
+      <Filter>Chateg</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
