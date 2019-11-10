@@ -13,12 +13,12 @@ ChategClient::ChategClient()
 		_server->Start();
 	}
 
-	_mailslotWrite = CreateFile(_mailslotName.c_str(), GENERIC_WRITE, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+	_mailslot = new ClientSideMailslotConnection<ChategMessage>(_mailslotName);
 }
 
 ChategClient::~ChategClient()
 {
-	CloseHandle(_mailslotWrite);
+	delete _mailslot;
 
 	if (nullptr != _server)
 		delete _server;
@@ -27,13 +27,17 @@ ChategClient::~ChategClient()
 
 void ChategClient::Start()
 {
-	std::string userMessage;
+	std::string userText;
 
-	std::cin >> userMessage;
+	std::cin >> userText;
 
-	DWORD bytesWritten;
+	ChategMessage* msg = new ChategMessage(userText);
 
-	WriteFile(_mailslotWrite, userMessage.c_str(), sizeof(std::string::value_type) * userMessage.length(), &bytesWritten, nullptr);
+	_mailslot->MessageSend(msg);
+
+	delete msg;
+
+	Sleep(4000);
 }
 
 

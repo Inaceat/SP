@@ -1,5 +1,10 @@
 ﻿#pragma once
 
+#include "ChategMessage.hpp"
+
+
+#include "MailslotConnection.hpp"
+
 
 class ChategServer
 {
@@ -18,5 +23,5 @@ private:
 
 private:
 	HANDLE _thread;
-	HANDLE _mailslotRead;
+	ServerSideMailslotConnection<ChategMessage>* _mailslot;
 };

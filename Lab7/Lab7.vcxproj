@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ChategClient.cpp" />
+    <ClCompile Include="src\ChategMessage.cpp" />
     <ClCompile Include="src\ChategServer.cpp" />
     <ClCompile Include="src\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -32,7 +33,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ChategClient.hpp" />
+    <ClInclude Include="src\ChategMessage.hpp" />
     <ClInclude Include="src\ChategServer.hpp" />
+    <ClInclude Include="src\MailslotConnection.hpp" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\targetver.h" />
     <ClInclude Include="src\Tasks.hpp" />

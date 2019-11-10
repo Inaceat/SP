@@ -2,21 +2,22 @@
 
 
 #include "ChategServer.hpp"
+#include "ChategMessage.hpp"
 
 
 ChategServer::ChategServer(std::string mailslotName)
 {
-	_mailslotRead = CreateMailslot(mailslotName.c_str(), 0, 0, nullptr);
+	_mailslot = new ServerSideMailslotConnection<ChategMessage>(mailslotName);
 
 	_thread = CreateThread(nullptr, 0, MessageProcessingThread, this, CREATE_SUSPENDED, nullptr);
 }
 
 ChategServer::~ChategServer()
 {
-	CloseHandle(_mailslotRead);
-
 	TerminateThread(_thread, 1);
 	CloseHandle(_thread);
+
+	delete _mailslot;
 }
 
 void ChategServer::Start()
@@ -27,32 +28,17 @@ void ChategServer::Start()
 
 void ChategServer::ProcessMessages()
 {
-	DWORD nextSize;
-
-	char* readBuffer = new char[424];
-	DWORD readBytes;
-
-	std::string receivedMessage;
-
 	while (true)
 	{
-		GetMailslotInfo(_mailslotRead, nullptr, &nextSize, nullptr, nullptr);
-
-		if (MAILSLOT_NO_MESSAGE == nextSize)
+		if (!_mailslot->HasMessages())
 			continue;
 
-		ReadFile(_mailslotRead, readBuffer, nextSize, &readBytes, nullptr);
-		readBuffer[readBytes] = '\0';
+		ChategMessage* message = _mailslot->MessageReceive();
 
-		receivedMessage.assign(readBuffer);
+		std::cout << message->ToString();
 
-		std::cout << receivedMessage << std::endl;
-
-		if ("!q" == receivedMessage)
-			break;
+		delete message;
 	}
-
-	delete[] readBuffer;
 }
 
 

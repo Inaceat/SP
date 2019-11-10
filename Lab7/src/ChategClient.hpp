@@ -20,7 +20,7 @@ private:
 private:
 	std::string _mailslotName = "\\\\.\\mailslot\\ChAtEg";
 
-	HANDLE _mailslotWrite;
+	ClientSideMailslotConnection<ChategMessage>* _mailslot;
 
 	ChategServer* _server = nullptr;
 };
