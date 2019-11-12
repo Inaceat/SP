@@ -22,18 +22,43 @@ public:
 			nullptr);
 	}
 
-	~ServerSideNamedPipeConnection()
+	void WaitConnection()
 	{
-		CloseHandle();
+		ConnectNamedPipe(_pipeHandle, nullptr);
 	}
 
 
+	~ServerSideNamedPipeConnection()
+	{
+		DisconnectNamedPipe(_pipeHandle);
+		CloseHandle(_pipeHandle);
+	}
+
+
+	bool HasMessages() const
+	{
+		DWORD nextMessageSize;
+
+		if (TRUE == PeekNamedPipe(_pipeHandle, nullptr, 0, nullptr, nullptr, &nextMessageSize) && 0 != nextMessageSize)
+			return true;
+
+		return false;
+		
+	}
+
 	TMessage* MessageReceive()
 	{
+		DWORD nextMessageSize;
+
+		PeekNamedPipe(_pipeHandle, nullptr, 0, nullptr, nullptr, &nextMessageSize);//TODO check this
+		
+		if(0 == nextMessageSize)
+			return nullptr;
+
 		char* messageBuffer = new char[nextMessageSize];
 		DWORD readBytes;
 
-		bool readSuccessful = ReadFile(_mailslotHandle, messageBuffer, nextMessageSize, &readBytes, nullptr);
+		bool readSuccessful = ReadFile(_pipeHandle, messageBuffer, nextMessageSize, &readBytes, nullptr);
 
 		if (!readSuccessful)
 		{
@@ -65,12 +90,12 @@ private:
 public:
 	ClientSideNamedPipeConnection(std::string name)
 	{
-		_pipeHandle = ;
+		_pipeHandle = CreateFile(name.c_str(), GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, 0, nullptr);
 	}
 
 	~ClientSideNamedPipeConnection()
 	{
-		CloseHandle();
+		CloseHandle(_pipeHandle);
 	}
 
 
@@ -81,7 +106,7 @@ public:
 
 		DWORD bytesWritten;
 
-		//WriteFile(_mailslotHandle, messageBytes, messageLength, &bytesWritten, nullptr);
+		WriteFile(_pipeHandle, messageBytes, messageLength, &bytesWritten, nullptr);
 
 		delete[] messageBytes;
 	}
