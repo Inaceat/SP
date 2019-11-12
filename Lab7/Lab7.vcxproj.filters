@@ -68,5 +68,8 @@
     <ClInclude Include="src\ChategServer.hpp">
       <Filter>Chateg</Filter>
     </ClInclude>
+    <ClInclude Include="src\NamedPipeConnection.hpp">
+      <Filter>Connections</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
