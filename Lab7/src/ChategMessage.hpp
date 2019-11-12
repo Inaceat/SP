@@ -1,10 +1,18 @@
 ﻿#pragma once
 
 
+enum class MessageType
+{
+	Text,
+	Service
+};
 
+//TODO make binary serialization using << >>
 class ChategMessage
 {
 public:
+	ChategMessage(MessageType type, std::string text);
+
 	ChategMessage(std::string text);
 
 
@@ -17,5 +25,7 @@ public:
 
 
 private:
+	MessageType _type;
+
 	std::string _text;
 };
