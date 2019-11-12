@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "ChategServer.hpp"
-
+#include "NamedPipeConnection.hpp"
 
 class ChategClient
 {
@@ -16,9 +16,17 @@ public:
 private:
 	bool TryFindServer();
 
+	static DWORD WINAPI MessageProcessingThread(LPVOID threadParam);
+
+	void ProcessMessages();
 
 private:
+	std::string _pipeName = "\\\\.\\pipe\\_xXx_MeGa_BoSs_xXx_";
 	std::string _mailslotName = "\\\\.\\mailslot\\ChAtEg";
+
+	ServerSideNamedPipeConnection<ChategMessage>* _pipe;
+
+	HANDLE _thread;
 
 	ClientSideMailslotConnection<ChategMessage>* _mailslot;
 

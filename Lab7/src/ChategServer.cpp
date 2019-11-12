@@ -17,6 +17,9 @@ ChategServer::~ChategServer()
 	TerminateThread(_thread, 1);
 	CloseHandle(_thread);
 
+	for (auto client : _clients)
+		delete client;
+
 	delete _mailslot;
 }
 
@@ -35,7 +38,22 @@ void ChategServer::ProcessMessages()
 
 		ChategMessage* message = _mailslot->MessageReceive();
 
-		std::cout << message->ToString();
+		//TODO
+		if (true)//message.IsRegistration()
+		{
+			std::string newClientName = "\\\\.\\pipe\\_xXx_MeGa_BoSs_xXx_";
+
+			//TODO check for duplicates
+			_clients.push_back(new ClientSideNamedPipeConnection<ChategMessage>(newClientName));
+		}
+
+		if (true)//message.IsText()
+		{
+			for (auto client : _clients)
+			{
+				client->MessageSend(message);
+			}
+		}
 
 		delete message;
 	}

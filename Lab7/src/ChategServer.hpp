@@ -4,6 +4,7 @@
 
 
 #include "MailslotConnection.hpp"
+#include "NamedPipeConnection.hpp"
 
 
 class ChategServer
@@ -24,4 +25,6 @@ private:
 private:
 	HANDLE _thread;
 	ServerSideMailslotConnection<ChategMessage>* _mailslot;
+
+	std::vector<ClientSideNamedPipeConnection<ChategMessage>*> _clients;
 };
