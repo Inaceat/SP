@@ -37,7 +37,7 @@ ChategMessage* ChategMessage::Create(char* messageBytes, int bytesSize)
 			break;
 	}
 
-	return new ChategMessage(type, std::string(messageBytes + 1, bytesSize - 1));
+	return new ChategMessage(type, std::string(messageBytes + 1));
 }
 
 char* ChategMessage::GetMessageBytes(int* bytesSize) const
