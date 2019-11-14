@@ -24,6 +24,8 @@ ChategClient::ChategClient()
 
 	_thread = CreateThread(nullptr, 0, MessageProcessingThread, this, CREATE_SUSPENDED, nullptr);
 	ResumeThread(_thread);
+
+	_gui = new ChategGUI();
 }
 
 ChategClient::~ChategClient()
@@ -37,22 +39,43 @@ ChategClient::~ChategClient()
 	CloseHandle(_thread);
 
 	delete _pipe;
+
+	delete _gui;
 }
+
+
 
 
 void ChategClient::Start()
 {
-	std::string userText;
+	HANDLE guiMessageEnteredEvent;
+	HANDLE guiExitEvent;
 
-	std::cin >> userText;
+	HANDLE networkMessageReceivedEvent;
 
-	ChategMessage* msg = new ChategMessage(userText);
+	_gui->Init();
 
-	_mailslot->MessageSend(msg);
 
-	delete msg;
+	while (true)
+	{
+		//auto waitResult = WaitForMultipleObjects(,,, 100);
 
-	Sleep(4000);
+		//if (WAIT_OBJECT_0 == waitResult)
+		{
+			//GUI & network events
+			///...
+		}
+
+		
+	}
+	
+	//ChategMessage* msg = new ChategMessage(userText);
+	//
+	//_mailslot->MessageSend(msg);
+	//
+	//delete msg;
+	//
+	//Sleep(4000);
 }
 
 

@@ -45,6 +45,9 @@
     <ClCompile Include="src\ChategServer.cpp">
       <Filter>Chateg</Filter>
     </ClCompile>
+    <ClCompile Include="src\ChategGUI.cpp">
+      <Filter>Chateg</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
@@ -70,6 +73,9 @@
     </ClInclude>
     <ClInclude Include="src\NamedPipeConnection.hpp">
       <Filter>Connections</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChategGUI.hpp">
+      <Filter>Chateg</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

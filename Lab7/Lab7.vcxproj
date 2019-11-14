@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ChategClient.cpp" />
+    <ClCompile Include="src\ChategGUI.cpp" />
     <ClCompile Include="src\ChategMessage.cpp" />
     <ClCompile Include="src\ChategServer.cpp" />
     <ClCompile Include="src\stdafx.cpp">
@@ -33,6 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ChategClient.hpp" />
+    <ClInclude Include="src\ChategGUI.hpp" />
     <ClInclude Include="src\ChategMessage.hpp" />
     <ClInclude Include="src\ChategServer.hpp" />
     <ClInclude Include="src\MailslotConnection.hpp" />

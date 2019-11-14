@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "ChategServer.hpp"
 #include "NamedPipeConnection.hpp"
+#include "ChategGUI.hpp"
 
 class ChategClient
 {
@@ -31,4 +32,6 @@ private:
 	ClientSideMailslotConnection<ChategMessage>* _mailslot;
 
 	ChategServer* _server = nullptr;
+
+	ChategGUI* _gui;
 };
