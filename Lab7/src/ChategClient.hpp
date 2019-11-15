@@ -2,6 +2,7 @@
 #include "ChategServer.hpp"
 #include "NamedPipeConnection.hpp"
 #include "ChategGUI.hpp"
+#include "SynchronizedQueue.hpp"
 
 class ChategClient
 {
@@ -33,5 +34,9 @@ private:
 
 	ChategServer* _server = nullptr;
 
-	ChategGUI* _gui;
+	//ChategGUI* _gui;
+	//SynchronizedQueue<std::string>* _guiEnteredText;
+	
+	SynchronizedQueue<ChategMessage*>* _netReceivedMessages;
+	HANDLE _netReceivedEvent;
 };

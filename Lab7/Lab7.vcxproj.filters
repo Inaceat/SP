@@ -77,5 +77,8 @@
     <ClInclude Include="src\ChategGUI.hpp">
       <Filter>Chateg</Filter>
     </ClInclude>
+    <ClInclude Include="src\SynchronizedQueue.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

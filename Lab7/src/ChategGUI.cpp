@@ -4,9 +4,9 @@
 #include "ChategGUI.hpp"
 
 
-ChategGUI::ChategGUI()
+ChategGUI::ChategGUI::ChategGUI(SynchronizedQueue<std::string>* enteredMessages)
 {
-
+	_enteredMessages = enteredMessages;
 }
 
 ChategGUI::~ChategGUI()

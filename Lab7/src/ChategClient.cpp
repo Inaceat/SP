@@ -25,7 +25,11 @@ ChategClient::ChategClient()
 	_thread = CreateThread(nullptr, 0, MessageProcessingThread, this, CREATE_SUSPENDED, nullptr);
 	ResumeThread(_thread);
 
-	_gui = new ChategGUI();
+	_netReceivedMessages = new SynchronizedQueue<ChategMessage*>;
+	_netReceivedEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+
+	//_guiEnteredText = new SynchronizedQueue<std::string>();
+	//_gui = new ChategGUI(_guiEnteredText);
 }
 
 ChategClient::~ChategClient()
@@ -33,14 +37,20 @@ ChategClient::~ChategClient()
 	delete _mailslot;
 
 	if (nullptr != _server)
+	{
+		//_server->Stop();
 		delete _server;
+	}
 
 	TerminateThread(_thread, 1);
 	CloseHandle(_thread);
 
 	delete _pipe;
 
-	delete _gui;
+	delete _netReceivedMessages;
+	CloseHandle(_netReceivedEvent);
+	//delete _gui;
+	//delete _guiEnteredText;
 }
 
 
@@ -48,34 +58,69 @@ ChategClient::~ChategClient()
 
 void ChategClient::Start()
 {
-	HANDLE guiMessageEnteredEvent;
-	HANDLE guiExitEvent;
+	//HANDLE guiTextEnteredEvent;
+	//HANDLE guiExitEvent;
+	//
+	//HANDLE networkMessageReceivedEvent;
+	//
+	//
+	//
+	//HANDLE events[3] = { guiTextEnteredEvent, guiExitEvent, networkMessageReceivedEvent };
 
-	HANDLE networkMessageReceivedEvent;
+	//_gui->Init();
 
-	_gui->Init();
-
-
-	while (true)
+	int i = 0;
+	while (i++ < 5)
 	{
-		//auto waitResult = WaitForMultipleObjects(,,, 100);
+		std::string text = "text" + std::to_string(i);// _gui->GetEnteredText();
 
-		//if (WAIT_OBJECT_0 == waitResult)
+		ChategMessage* msg = new ChategMessage(text);
+
+		_mailslot->MessageSend(msg);
+
+		delete msg;
+
+		try
 		{
-			//GUI & network events
-			///...
+			auto received = _netReceivedMessages->Pop();
+
+			std::cout << "[PseudoGUI]" << received->ToString() << std::endl;
+
+			delete received;
+		}
+		catch (std::exception e)
+		{
+			if ("empty" == e.what())
+			{
+			}
+			else
+				throw;
 		}
 
-		
+		Sleep(1000);
 	}
-	
-	//ChategMessage* msg = new ChategMessage(userText);
+
+	//while (true)
+	//{
+	//	DWORD waitResult = WaitForMultipleObjects(3, events, FALSE, 100);
 	//
-	//_mailslot->MessageSend(msg);
+	//	if (WAIT_OBJECT_0 == waitResult)
+	//	{
+	//		std::string text = "fromGUI";// _gui->GetEnteredText();
 	//
-	//delete msg;
+	//		ChategMessage* msg = new ChategMessage(text);
 	//
-	//Sleep(4000);
+	//		_mailslot->MessageSend(msg);
+	//
+	//		delete msg;
+	//	}
+	//	else if (WAIT_OBJECT_0 + 1 == waitResult)
+	//		break;
+	//	else if (WAIT_OBJECT_0 + 2 == waitResult)
+	//	{
+	//		//_gui->PrintMessage();
+	//	}
+	//}
 }
 
 
@@ -95,9 +140,9 @@ void ChategClient::ProcessMessages()
 
 		ChategMessage* message = _pipe->MessageReceive();
 
-		std::cout << "[Client]" << message->ToString() << std::endl;
+		std::cout << "[Receiver]" << message->ToString() << std::endl;
 
-		delete message;
+		_netReceivedMessages->Push(message);
 	}
 }
 

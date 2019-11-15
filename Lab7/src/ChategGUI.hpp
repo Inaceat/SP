@@ -1,10 +1,11 @@
 ﻿#pragma once
+#include "SynchronizedQueue.hpp"
 
 
 class ChategGUI
 {
 public:
-	ChategGUI();
+	ChategGUI(SynchronizedQueue<std::string>* enteredMessages);
 	
 	~ChategGUI();
 	
@@ -12,5 +13,5 @@ public:
 	void Init();
 
 private:
-	
+	SynchronizedQueue<std::string>* _enteredMessages;
 };
