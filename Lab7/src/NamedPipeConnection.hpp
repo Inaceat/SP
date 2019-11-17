@@ -22,9 +22,25 @@ public:
 			nullptr);
 	}
 
-	void WaitConnection()
+	bool WaitConnection(int timeout)
 	{
-		ConnectNamedPipe(_pipeHandle, nullptr);
+		OVERLAPPED overlapInfo;
+		ZeroMemory(&overlapInfo, sizeof(OVERLAPPED));
+
+		overlapInfo.hEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+
+		ConnectNamedPipe(_pipeHandle, &overlapInfo);
+
+
+		DWORD waitResult = WaitForSingleObject(overlapInfo.hEvent, timeout);
+
+
+		if (WAIT_TIMEOUT != waitResult)
+			CancelIo(_pipeHandle);//TODO maybe check
+
+		CloseHandle(overlapInfo.hEvent);
+
+		return WAIT_OBJECT_0 == waitResult;
 	}
 
 
