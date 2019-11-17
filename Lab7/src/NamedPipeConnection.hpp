@@ -22,7 +22,7 @@ public:
 			nullptr);
 	}
 
-	void WaitConnection()
+	bool WaitConnection(int timeout)
 	{
 		ConnectNamedPipe(_pipeHandle, nullptr);
 	}
