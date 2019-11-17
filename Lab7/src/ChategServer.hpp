@@ -1,30 +1,37 @@
 ﻿#pragma once
 
-#include "ChategMessage.hpp"
+#include "ChategNetworkMessage.hpp"
 
 
 #include "MailslotConnection.hpp"
 #include "NamedPipeConnection.hpp"
 
 
-class ChategServer
+namespace Chateg
 {
-public:
-	ChategServer(std::string mailslotName);
-
-	~ChategServer();
-
-
-	void Start();
-
-private:
-	static DWORD WINAPI MessageProcessingThread(LPVOID threadParam);
+	class ChategServer
+	{
+	public:
+		ChategServer(std::string serverName);
 	
-	void ProcessMessages();
+		~ChategServer();
+	
+	
+		void Start();
+		
+		void Stop();
 
-private:
-	HANDLE _thread;
-	ServerSideMailslotConnection<ChategMessage>* _mailslot;
 
-	std::vector<ClientSideNamedPipeConnection<ChategMessage>*> _clients;
-};
+	private:
+		static DWORD WINAPI MessageProcessingThread(LPVOID threadParam);
+		
+		void ProcessMessages();
+	
+	private:
+		HANDLE _thread;
+
+		ServerSideMailslotConnection<ChategNetworkMessage>* _mailslot;
+	
+		std::vector<ClientSideNamedPipeConnection<ChategNetworkMessage>*> _clients;
+	};
+}

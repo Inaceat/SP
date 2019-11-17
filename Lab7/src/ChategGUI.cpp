@@ -4,21 +4,18 @@
 #include "ChategGUI.hpp"
 
 
-ChategGUI::ChategGUI::ChategGUI(SynchronizedQueue<std::string>* enteredMessages)
-{
-	_enteredMessages = enteredMessages;
-}
-
-ChategGUI::~ChategGUI()
+Chateg::ChategGUI::ChategGUI::ChategGUI()
 {
 
 }
 
-
-void ChategGUI::Init()
+Chateg::ChategGUI::~ChategGUI()
 {
 
 }
+
+
+
 
 /*
 CRITICAL_SECTION queueCS;

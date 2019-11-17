@@ -13,7 +13,7 @@ public:
 	{
 		_pipeHandle = CreateNamedPipe(
 			name.c_str(), 
-			PIPE_ACCESS_INBOUND, //TODO FILE_FLAG_FIRST_PIPE_INSTANCE for same name? FILE_FLAG_OVERLAPPED?
+			PIPE_ACCESS_INBOUND | FILE_FLAG_OVERLAPPED,
 			PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE,
 			PIPE_UNLIMITED_INSTANCES,
 			1024,
@@ -55,18 +55,18 @@ public:
 	{
 		DWORD nextMessageSize;
 
-		if (TRUE == PeekNamedPipe(_pipeHandle, nullptr, 0, nullptr, nullptr, &nextMessageSize) && 0 != nextMessageSize)
+		if (TRUE == PeekNamedPipe(_pipeHandle, nullptr, 0, nullptr, nullptr, &nextMessageSize) && 0 != nextMessageSize)//TODO check overlap?
 			return true;
 
 		return false;
 		
 	}
 
-	TMessage* MessageReceive()
+	TMessage* MessageReceive(/*int timeout*/)
 	{
 		DWORD nextMessageSize;
 
-		PeekNamedPipe(_pipeHandle, nullptr, 0, nullptr, nullptr, &nextMessageSize);//TODO check this
+		PeekNamedPipe(_pipeHandle, nullptr, 0, nullptr, nullptr, &nextMessageSize);//TODO check overlap?
 		
 		if(0 == nextMessageSize)
 			return nullptr;
@@ -74,7 +74,8 @@ public:
 		char* messageBuffer = new char[nextMessageSize];
 		DWORD readBytes;
 
-		bool readSuccessful = ReadFile(_pipeHandle, messageBuffer, nextMessageSize, &readBytes, nullptr);
+		//add OVERLAPPED here
+		bool readSuccessful = ReadFileCHANGEME(_pipeHandle, messageBuffer, nextMessageSize, &readBytes, nullptr);//TODO timeout?
 
 		if (!readSuccessful)
 		{

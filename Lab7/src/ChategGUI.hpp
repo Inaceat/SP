@@ -1,17 +1,28 @@
 ﻿#pragma once
-#include "SynchronizedQueue.hpp"
+
+#include "ChategGUICommand.hpp"
 
 
-class ChategGUI
+namespace Chateg
 {
-public:
-	ChategGUI(SynchronizedQueue<std::string>* enteredMessages);
-	
-	~ChategGUI();
-	
-	
-	void Init();
+	class ChategGUI
+	{
+	public:
+		ChategGUI();
+		
+		~ChategGUI();
+		
+		
+		void Start();
+		
+		std::string AskClientName();
+		
+		ChategGUICommand* CommandReceive(int timeout);
+		
+		void ShowMessage(std::string messageText);
 
-private:
-	SynchronizedQueue<std::string>* _enteredMessages;
-};
+
+	private:
+		
+	};
+}

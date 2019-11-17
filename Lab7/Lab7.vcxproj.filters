@@ -13,11 +13,23 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Connections">
-      <UniqueIdentifier>{855bb002-e894-4f65-a924-868edc9f2131}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Chateg">
       <UniqueIdentifier>{7a62ebde-8b90-4aff-9191-52bd3c0605d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chateg\Network">
+      <UniqueIdentifier>{ec39f646-652f-41ca-9c07-4f6b8317eb54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chateg\GUI">
+      <UniqueIdentifier>{043c6f3f-4f17-4c67-b621-5ee11a464a35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chateg\Client">
+      <UniqueIdentifier>{7a471f21-b0fc-48ca-955a-cc3f7821222a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chateg\Server">
+      <UniqueIdentifier>{e190ca19-9aad-4644-aade-12cd3f247067}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chateg\Network\Connections">
+      <UniqueIdentifier>{855bb002-e894-4f65-a924-868edc9f2131}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -36,17 +48,23 @@
     <ClCompile Include="src\Task3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChategClient.cpp">
-      <Filter>Chateg</Filter>
+    <ClCompile Include="src\ChategGUI.cpp">
+      <Filter>Chateg\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChategMessage.cpp">
-      <Filter>Chateg</Filter>
+    <ClCompile Include="src\ChategClient.cpp">
+      <Filter>Chateg\Client</Filter>
     </ClCompile>
     <ClCompile Include="src\ChategServer.cpp">
-      <Filter>Chateg</Filter>
+      <Filter>Chateg\Server</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChategGUI.cpp">
-      <Filter>Chateg</Filter>
+    <ClCompile Include="src\ChategNetwork.cpp">
+      <Filter>Chateg\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChategNetworkMessage.cpp">
+      <Filter>Chateg\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChategGUICommand.cpp">
+      <Filter>Chateg\GUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -60,25 +78,28 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\MailslotConnection.hpp">
-      <Filter>Connections</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChategClient.hpp">
-      <Filter>Chateg</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChategMessage.hpp">
-      <Filter>Chateg</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChategServer.hpp">
-      <Filter>Chateg</Filter>
+      <Filter>Chateg\Network\Connections</Filter>
     </ClInclude>
     <ClInclude Include="src\NamedPipeConnection.hpp">
-      <Filter>Connections</Filter>
+      <Filter>Chateg\Network\Connections</Filter>
     </ClInclude>
     <ClInclude Include="src\ChategGUI.hpp">
-      <Filter>Chateg</Filter>
+      <Filter>Chateg\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="src\SynchronizedQueue.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\ChategClient.hpp">
+      <Filter>Chateg\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChategServer.hpp">
+      <Filter>Chateg\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChategNetwork.hpp">
+      <Filter>Chateg\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChategNetworkMessage.hpp">
+      <Filter>Chateg\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChategGUICommand.hpp">
+      <Filter>Chateg\GUI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,42 +1,35 @@
 ﻿#pragma once
-#include "ChategServer.hpp"
-#include "NamedPipeConnection.hpp"
+
 #include "ChategGUI.hpp"
-#include "SynchronizedQueue.hpp"
+#include "ChategNetwork.hpp"
 
-class ChategClient
+#include "ChategServer.hpp"
+
+
+namespace Chateg
 {
-public:
-	ChategClient();
-
-	~ChategClient();
-
-
-	void Start();
-
-
-private:
-	bool TryFindServer();
-
-	static DWORD WINAPI MessageProcessingThread(LPVOID threadParam);
-
-	void ProcessMessages();
-
-private:
-	std::string _pipeName = "\\\\.\\pipe\\_xXx_MeGa_BoSs_xXx_";
-	std::string _mailslotName = "\\\\.\\mailslot\\ChAtEg";
-
-	ServerSideNamedPipeConnection<ChategMessage>* _pipe;
-
-	HANDLE _thread;
-
-	ClientSideMailslotConnection<ChategMessage>* _mailslot;
-
-	ChategServer* _server = nullptr;
-
-	//ChategGUI* _gui;
-	//SynchronizedQueue<std::string>* _guiEnteredText;
+	class ChategClient
+	{
+	public:
+		ChategClient();
 	
-	SynchronizedQueue<ChategMessage*>* _netReceivedMessages;
-	HANDLE _netReceivedEvent;
-};
+		~ChategClient();
+	
+	
+		void Start();
+	
+	
+	private:
+		std::string _serverName;
+		
+		std::string _clientName;
+		
+	
+		ChategGUI _gui;
+		
+		ChategNetwork _network;
+
+
+		ChategServer* _server = nullptr;
+	};
+}

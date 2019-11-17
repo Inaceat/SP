@@ -8,7 +8,7 @@
 
 void Task3::Do()
 {
-	auto client = new ChategClient();
+	auto client = new Chateg::ChategClient();
 	
 	client->Start();
 
