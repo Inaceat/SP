@@ -23,6 +23,13 @@ namespace Chateg
 
 
 	private:
-		
+		void ConsoleWriter();
+
+		void ConsoleReader();
+
+	private:
+		std::thread _guiOutputThread;
+		std::thread _guiInputThread;
+
 	};
 }
