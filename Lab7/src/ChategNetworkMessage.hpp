@@ -24,8 +24,8 @@ namespace Chateg
 		char* GetMessageBytes(int* bytesSize) const;
 	
 
-		MessageType Type();
-		std::string Data();
+		MessageType Type() const;
+		std::string Data() const;
 
 		std::string ToString() const;
 	

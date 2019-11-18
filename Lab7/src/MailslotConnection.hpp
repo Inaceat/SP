@@ -72,14 +72,21 @@ private:
 	ClientSideMailslotConnection& operator=(const ClientSideMailslotConnection&) = delete;
 
 public:
-	ClientSideMailslotConnection(std::string name)
-	{
-		_mailslotHandle = CreateFile(name.c_str(), GENERIC_WRITE, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-	}
+	ClientSideMailslotConnection(std::string name) :
+		_serverName(name)
+	{}
 
 	~ClientSideMailslotConnection()
 	{
 		CloseHandle(_mailslotHandle);
+	}
+
+
+	bool TryConnect()
+	{
+		_mailslotHandle = CreateFile(_serverName.c_str(), GENERIC_WRITE, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+		return INVALID_HANDLE_VALUE != _mailslotHandle;
 	}
 
 
@@ -97,5 +104,6 @@ public:
 
 
 private:
+	std::string _serverName;
 	HANDLE _mailslotHandle;
 };

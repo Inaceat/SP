@@ -74,17 +74,30 @@ public:
 		char* messageBuffer = new char[nextMessageSize];
 		DWORD readBytes;
 
-		//add OVERLAPPED here
-		bool readSuccessful = ReadFileCHANGEME(_pipeHandle, messageBuffer, nextMessageSize, &readBytes, nullptr);//TODO timeout?
 
-		if (!readSuccessful)
-		{
-			delete[] messageBuffer;
+		OVERLAPPED overlapInfo;
+		ZeroMemory(&overlapInfo, sizeof(OVERLAPPED));
+		overlapInfo.hEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
 
-			return nullptr;
-		}
+
+		/*bool readSuccessful = */ReadFile(_pipeHandle, messageBuffer, nextMessageSize, &readBytes, &overlapInfo);
+		WaitForSingleObject(overlapInfo.hEvent, INFINITE);
+		//if (false == readSuccessful)
+		//	readSuccessful = ERROR_IO_PENDING == GetLastError();
+		//
+		//if (!readSuccessful)
+		//{
+		//	delete[] messageBuffer;
+		//
+		//	return nullptr;
+		//}
+
+		
+
 
 		TMessage* result = TMessage::Create(messageBuffer, readBytes);
+
+		CloseHandle(overlapInfo.hEvent);
 
 		delete[] messageBuffer;
 

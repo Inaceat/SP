@@ -16,7 +16,7 @@ namespace Chateg
 		~ChategNetwork();
 
 
-		void Start(const std::string& serverName, const std::string& clientID);
+		void Start(const std::string & serverName, const std::string& clientID);
 
 
 		bool TryConnectToServer(int searchTimeout);

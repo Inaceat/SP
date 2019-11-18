@@ -4,17 +4,42 @@
 #include "ChategGUI.hpp"
 
 
-Chateg::ChategGUI::ChategGUI::ChategGUI()
+namespace Chateg
 {
+	ChategGUI::ChategGUI()
+	{
 
+	}
+	
+	ChategGUI::~ChategGUI()
+	{
+		
+	}
+	
+	
+	void ChategGUI::Start()
+	{
+
+	}
+	
+	
+	std::string ChategGUI::AskClientName()
+	{
+		return std::string("xXx_MegAboSs_xXx");
+	}
+	
+	
+	ChategGUICommand* ChategGUI::CommandReceive(int timeout)
+	{
+		return new ChategGUICommand(ChategGUICommand::CommandType::Message, "qweasd");
+	}
+	
+	
+	void ChategGUI::ShowMessage(std::string messageText)
+	{
+		std::cout << messageText << std::endl;
+	}
 }
-
-Chateg::ChategGUI::~ChategGUI()
-{
-
-}
-
-
 
 
 /*

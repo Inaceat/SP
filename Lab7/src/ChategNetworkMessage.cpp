@@ -60,6 +60,17 @@ namespace Chateg
 	
 		return messageBytes;
 	}
+
+
+	ChategNetworkMessage::MessageType ChategNetworkMessage::Type() const
+	{
+		return _type;
+	}
+
+	std::string ChategNetworkMessage::Data() const
+	{
+		return _text;
+	}
 	
 	
 	std::string ChategNetworkMessage::ToString() const

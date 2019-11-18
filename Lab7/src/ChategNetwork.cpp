@@ -37,24 +37,34 @@ namespace Chateg
 
 	bool ChategNetwork::TryConnectToServer(int searchTimeout)
 	{
-		ChategNetworkMessage* registrationMessage = new ChategNetworkMessage(ChategNetworkMessage::MessageType::Service, _clientID);
+		if (_outMailslot->TryConnect())
+		{
+			ChategNetworkMessage* registrationMessage = new ChategNetworkMessage(ChategNetworkMessage::MessageType::Service, _clientID);
 
-		_outMailslot->MessageSend(registrationMessage);
+			_outMailslot->MessageSend(registrationMessage);
 
-		delete registrationMessage;
+			delete registrationMessage;
 
 
-		return _inPipe->WaitConnection(searchTimeout);	
+			return _inPipe->WaitConnection(searchTimeout);
+		}
+		else
+			return false;
 	}
 
 
 	ChategNetworkMessage* ChategNetwork::MessageReceive(int timeout)
 	{
 		//TODO assuming message is never splitted, probably I'm wrong :)
+		if(_inPipe->HasMessages())
+			return _inPipe->MessageReceive();
 
+		Sleep(timeout);//oh shi..
 
-
-		return _inPipe->MessageReceive();
+		if (_inPipe->HasMessages())
+			return _inPipe->MessageReceive();
+		
+		return nullptr;
 	}
 
 	void ChategNetwork::MessageSend(ChategNetworkMessage* chategNetworkMessage)
