@@ -26,7 +26,7 @@ namespace Chateg
 
 		std::string inPipeName = "\\\\.\\pipe\\" + clientID;
 		
-		std::string outMailslotName = "\\\\.\\mailslot\\" + serverName;
+		std::string outMailslotName = "\\\\*\\mailslot\\" + serverName;
 
 
 		_inPipe = new ServerSideNamedPipeConnection<ChategNetworkMessage>(inPipeName);

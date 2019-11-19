@@ -23,12 +23,21 @@ namespace Chateg
 	
 	void ChategClient::Start()
 	{
+		DWORD nameSize;
+		char nameBuffer[256];
+
+		GetComputerNameEx(ComputerNameDnsHostname, nameBuffer, &nameSize);
+		nameBuffer[nameSize] = 0;
+
+		_clientID = std::string(nameBuffer);
+
+
 		_gui.Start();
 	
 	
 		_clientName = _gui.AskClientName();
 	
-		_network.Start(_serverName, _clientName);
+		_network.Start(_serverName, _clientID);
 
 
 		const int searchTimeout = 1000;
@@ -95,6 +104,6 @@ namespace Chateg
 			}
 		}
 
-		_network.MessageSend(new ChategNetworkMessage(ChategNetworkMessage::MessageType::Unregister, _clientName));
+		_network.MessageSend(new ChategNetworkMessage(ChategNetworkMessage::MessageType::Unregister, _clientID));
 	}
 }

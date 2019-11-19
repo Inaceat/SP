@@ -23,7 +23,7 @@ namespace Chateg
 		std::string _serverName;
 		
 		std::string _clientName;
-		
+		std::string _clientID;
 	
 		ChategGUI _gui;
 		
