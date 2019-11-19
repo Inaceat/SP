@@ -3,14 +3,14 @@
 
 namespace Chateg
 {
-	//TODO make binary serialization using << >>?
 	class ChategNetworkMessage
 	{
 	public:
 		enum class MessageType
 		{
 			Text,
-			Service
+			Register,
+			Unregister
 		};
 
 	public:

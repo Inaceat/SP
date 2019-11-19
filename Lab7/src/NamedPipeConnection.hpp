@@ -24,23 +24,32 @@ public:
 
 	bool WaitConnection(int timeout)
 	{
+		bool result = false;
+
 		OVERLAPPED overlapInfo;
 		ZeroMemory(&overlapInfo, sizeof(OVERLAPPED));
 
 		overlapInfo.hEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
 
-		ConnectNamedPipe(_pipeHandle, &overlapInfo);
+		auto connectionResult = ConnectNamedPipe(_pipeHandle, &overlapInfo);
+		
+		if (FALSE == connectionResult && ERROR_IO_PENDING == GetLastError())
+		{
+			DWORD waitResult = WaitForSingleObject(overlapInfo.hEvent, timeout);
 
+			if (WAIT_TIMEOUT == waitResult)
+				CancelIo(_pipeHandle);
 
-		DWORD waitResult = WaitForSingleObject(overlapInfo.hEvent, timeout);
+			if (WAIT_OBJECT_0 == waitResult)
+				result = true;
+		}
 
-
-		if (WAIT_TIMEOUT != waitResult)
-			CancelIo(_pipeHandle);//TODO maybe check
+		if (FALSE == connectionResult && ERROR_PIPE_CONNECTED == GetLastError())
+			result = true;
 
 		CloseHandle(overlapInfo.hEvent);
 
-		return WAIT_OBJECT_0 == waitResult;
+		return result;
 	}
 
 
@@ -120,12 +129,20 @@ private:
 public:
 	ClientSideNamedPipeConnection(std::string name)
 	{
+		_name = name;
+
 		_pipeHandle = CreateFile(name.c_str(), GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, 0, nullptr);
 	}
 
 	~ClientSideNamedPipeConnection()
 	{
 		CloseHandle(_pipeHandle);
+	}
+
+
+	std::string Name() const
+	{
+		return _name;
 	}
 
 
@@ -143,5 +160,7 @@ public:
 
 
 private:
+	std::string _name;
+
 	HANDLE _pipeHandle;
 };

@@ -39,7 +39,7 @@ namespace Chateg
 	{
 		if (_outMailslot->TryConnect())
 		{
-			ChategNetworkMessage* registrationMessage = new ChategNetworkMessage(ChategNetworkMessage::MessageType::Service, _clientID);
+			ChategNetworkMessage* registrationMessage = new ChategNetworkMessage(ChategNetworkMessage::MessageType::Register, _clientID);
 
 			_outMailslot->MessageSend(registrationMessage);
 
@@ -48,8 +48,8 @@ namespace Chateg
 
 			return _inPipe->WaitConnection(searchTimeout);
 		}
-		else
-			return false;
+		
+		return false;
 	}
 
 

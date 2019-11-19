@@ -23,7 +23,6 @@ namespace Chateg
 	{
 		MessageType type;
 	
-		//TODO meh, switch
 		switch (messageBytes[0])
 		{
 			case 0:
@@ -31,12 +30,15 @@ namespace Chateg
 				break;
 	
 			case 1:
-				type = MessageType::Service;
+				type = MessageType::Register;
 				break;
-	
+
+			case 2:
+				type = MessageType::Unregister;
+				break;
+
 			default:
 				throw "AAAAAAAAAAAAAAAAAAAAAAA";
-				break;
 		}
 	
 		return new ChategNetworkMessage(type, std::string(messageBytes + 1));
@@ -49,11 +51,21 @@ namespace Chateg
 		char* messageBytes = new char[*bytesSize];
 	
 		//Type
-		if (MessageType::Text == _type)
-			messageBytes[0] = 0;
-		else
-			messageBytes[0] = 1;
-	
+		switch (_type)
+		{
+			case MessageType::Text: 
+				messageBytes[0] = 0; 
+				break;
+
+			case MessageType::Register:
+				messageBytes[0] = 1;
+				break;
+
+			case MessageType::Unregister:
+				messageBytes[0] = 2; 
+				break;
+		}
+
 		//Text
 		strcpy_s(messageBytes + 1, *bytesSize - 1, _text.c_str());
 	

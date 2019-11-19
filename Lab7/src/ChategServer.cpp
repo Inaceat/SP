@@ -47,20 +47,42 @@ namespace Chateg
 			ChategNetworkMessage* message = _mailslot->MessageReceive();
 	
 			//TODO
-			if (ChategNetworkMessage::MessageType::Service == message->Type())//TODO message.IsRegistration() ?
+			switch (message->Type())
 			{
-				std::string newClientPipeName = "\\\\.\\pipe\\" + message->Data();
-	
-				//TODO check for duplicates
-				_clients.push_back(new ClientSideNamedPipeConnection<ChategNetworkMessage>(newClientPipeName));
-			}
-	
-			if (ChategNetworkMessage::MessageType::Text == message->Type())//message.IsText()
-			{
-				for (auto client : _clients)
+				case ChategNetworkMessage::MessageType::Text:
 				{
-					client->MessageSend(message);
-				}
+					for (auto client : _clients)
+						client->MessageSend(message);
+
+				}break;
+
+				case ChategNetworkMessage::MessageType::Register:
+				{
+					std::string newClientPipeName = "\\\\.\\pipe\\" + message->Data();
+
+					//TODO check for duplicates
+					_clients.push_back(new ClientSideNamedPipeConnection<ChategNetworkMessage>(newClientPipeName));
+				
+				}break;
+				
+				
+				case ChategNetworkMessage::MessageType::Unregister:
+				{
+					std::string unregisteringClientPipeName = "\\\\.\\pipe\\" + message->Data();
+
+					
+					auto current = _clients.begin();
+					for (; current != _clients.end(); ++current)
+					{						
+						if (unregisteringClientPipeName == (*current)->Name())
+							break;
+					}
+
+					delete *current;
+
+					_clients.erase(current);
+
+				}break;
 			}
 	
 			delete message;

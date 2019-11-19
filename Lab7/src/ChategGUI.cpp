@@ -40,7 +40,21 @@ namespace Chateg
 	
 	std::string ChategGUI::AskClientName()
 	{
-		return std::string("xXx_MegAboSs_xXx");
+		this->ShowMessage("Please, enter your name: ");
+
+		ChategGUICommand* nameCommand;
+
+		do
+		{
+			nameCommand = CommandReceive(100);
+		}
+		while (nullptr == nameCommand);
+
+		std::string name = nameCommand->Data();
+
+		delete nameCommand;
+
+		return name;
 	}
 	
 	
@@ -66,6 +80,8 @@ namespace Chateg
 
 		std::string message(buffer + 2);
 
+		if ("stop" == message)
+			return new ChategGUICommand(ChategGUICommand::CommandType::Quit, message);
 
 		return new ChategGUICommand(ChategGUICommand::CommandType::Message, message);
 	}
@@ -238,7 +254,21 @@ namespace Chateg
 				//If Exit key
 				else if (VK_ESCAPE == inputRecord.Event.KeyEvent.wVirtualKeyCode)
 				{
+					//Stop writer
 					WriteFile(_letterIn, &(inputRecord.Event.KeyEvent.wVirtualKeyCode), sizeof(WORD), &bytesWritten, nullptr);
+
+					std::string stopMessage = "stop";
+
+					WORD bufferSize = stopMessage.size() + 1 + 2;//text + '\0' + two bytes for size
+					char* buffer = new char[bufferSize];
+
+					memcpy_s(buffer, 2, &bufferSize, 2);//Copy size
+					strcpy_s(buffer + 2, bufferSize - 2, stopMessage.c_str());//And text
+
+					WriteFile(_commandIn, buffer, bufferSize, &bytesWritten, nullptr);
+
+					delete[] buffer;
+
 					break;
 				}
 			}
