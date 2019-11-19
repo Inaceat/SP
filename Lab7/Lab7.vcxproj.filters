@@ -19,9 +19,6 @@
     <Filter Include="Chateg\Network">
       <UniqueIdentifier>{ec39f646-652f-41ca-9c07-4f6b8317eb54}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Chateg\GUI">
-      <UniqueIdentifier>{043c6f3f-4f17-4c67-b621-5ee11a464a35}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Chateg\Client">
       <UniqueIdentifier>{7a471f21-b0fc-48ca-955a-cc3f7821222a}</UniqueIdentifier>
     </Filter>
@@ -30,6 +27,9 @@
     </Filter>
     <Filter Include="Chateg\Network\Connections">
       <UniqueIdentifier>{855bb002-e894-4f65-a924-868edc9f2131}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chateg\GUI">
+      <UniqueIdentifier>{043c6f3f-4f17-4c67-b621-5ee11a464a35}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
