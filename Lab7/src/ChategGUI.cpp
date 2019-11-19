@@ -222,6 +222,8 @@ namespace Chateg
 					WriteFile(_commandIn, buffer, bufferSize, &bytesWritten, nullptr);
 
 					delete[] buffer;
+
+					currentMessageBuffer.erase();
 				}
 				//If backspace
 				else if (VK_BACK == inputRecord.Event.KeyEvent.wVirtualKeyCode)
