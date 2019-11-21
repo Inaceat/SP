@@ -16,7 +16,7 @@ namespace Chateg
 		~ChategNetwork();
 
 
-		void Start(const std::string & serverName, const std::string& clientID);
+		void Start(const std::string& serverName, const std::string& clientName);
 
 
 		bool TryConnectToServer(int searchTimeout);
@@ -25,11 +25,16 @@ namespace Chateg
 		ChategNetworkMessage* MessageReceive(int timeout);
 		
 		void MessageSend(ChategNetworkMessage* chategNetworkMessage);
+		
+		
+		void Stop();
 
 
 	private:
 		std::string _clientID;
+		std::string _clientName;
 
+		bool _domainMode;
 
 		ClientSideMailslotConnection<ChategNetworkMessage>* _outMailslot;
 

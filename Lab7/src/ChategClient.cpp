@@ -23,24 +23,15 @@ namespace Chateg
 	
 	void ChategClient::Start()
 	{
-		DWORD nameSize;
-		char nameBuffer[256];
-
-		GetComputerNameEx(ComputerNameDnsHostname, nameBuffer, &nameSize);
-		nameBuffer[nameSize] = 0;
-
-		_clientID = std::string(nameBuffer);
-
-
 		_gui.Start();
 	
 	
 		_clientName = _gui.AskClientName();
 	
-		_network.Start(_serverName, _clientID);
+		_network.Start(_serverName, _clientName);
 
 
-		const int searchTimeout = 1000;
+		const int searchTimeout = 100000;
 
 		bool serverFound = _network.TryConnectToServer(searchTimeout);
 
@@ -52,7 +43,7 @@ namespace Chateg
 
 			serverFound = _network.TryConnectToServer(searchTimeout);
 
-			if (!serverFound)//TODO maybe smth?
+			if (!serverFound)
 				throw std::string("AAA can't connect to local server");
 		}
 
@@ -104,6 +95,6 @@ namespace Chateg
 			}
 		}
 
-		_network.MessageSend(new ChategNetworkMessage(ChategNetworkMessage::MessageType::Unregister, _clientID));
+		_network.Stop();
 	}
 }

@@ -58,7 +58,9 @@ namespace Chateg
 
 				case ChategNetworkMessage::MessageType::Register:
 				{
-					std::string newClientPipeName = "\\\\" + message->Data() + "\\pipe\\" + message->Data();
+					auto delimPosition = message->Data().find('$');
+
+					std::string newClientPipeName = "\\\\" + message->Data().substr(0, delimPosition) + "\\pipe\\" + message->Data().substr(delimPosition+1);
 
 					//TODO check for duplicates
 					_clients.push_back(new ClientSideNamedPipeConnection<ChategNetworkMessage>(newClientPipeName));
@@ -68,7 +70,9 @@ namespace Chateg
 				
 				case ChategNetworkMessage::MessageType::Unregister:
 				{
-					std::string unregisteringClientPipeName = "\\\\" + message->Data() + "\\pipe\\" + message->Data();
+					auto delimPosition = message->Data().find('$');
+					
+					std::string unregisteringClientPipeName = "\\\\" + message->Data().substr(0, delimPosition) + "\\pipe\\" + message->Data().substr(delimPosition+1);
 
 					
 					auto current = _clients.begin();

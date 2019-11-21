@@ -19,14 +19,38 @@ namespace Chateg
 	}
 
 
-	void ChategNetwork::Start(const std::string& serverName, const std::string& clientID)
+	void ChategNetwork::Start(const std::string& serverName, const std::string& clientName)
 	{
-		_clientID = clientID;
+		_clientName = clientName;
 
 
-		std::string inPipeName = "\\\\.\\pipe\\" + clientID;
+		DWORD nameSize;
+		char nameBuffer[256];
+
+
+		nameSize = 256;
+		GetComputerNameEx(ComputerNameDnsDomain, nameBuffer, &nameSize);
+		nameBuffer[nameSize] = 0;
+
+		std::string domainName(nameBuffer);
 		
-		std::string outMailslotName = "\\\\*\\mailslot\\" + serverName;
+		if("" == domainName)
+			_domainMode = false;
+		else
+			_domainMode = true;
+
+
+		nameSize = 256;
+		GetComputerNameEx(ComputerNameDnsHostname, nameBuffer, &nameSize);
+		nameBuffer[nameSize] = 0;
+
+		_clientID = std::string(nameBuffer);
+
+
+
+		std::string inPipeName = "\\\\.\\pipe\\" + clientName;
+		
+		std::string outMailslotName = "\\\\" + (_domainMode ? domainName : std::string(".")) + "\\mailslot\\" + serverName;
 
 
 		_inPipe = new ServerSideNamedPipeConnection<ChategNetworkMessage>(inPipeName);
@@ -39,7 +63,7 @@ namespace Chateg
 	{
 		if (_outMailslot->TryConnect())
 		{
-			ChategNetworkMessage* registrationMessage = new ChategNetworkMessage(ChategNetworkMessage::MessageType::Register, _clientID);
+			ChategNetworkMessage* registrationMessage = new ChategNetworkMessage(ChategNetworkMessage::MessageType::Register, _domainMode ? _clientID : std::string(".") + "$" + _clientName);
 
 			_outMailslot->MessageSend(registrationMessage);
 
@@ -70,5 +94,11 @@ namespace Chateg
 	void ChategNetwork::MessageSend(ChategNetworkMessage* chategNetworkMessage)
 	{
 		_outMailslot->MessageSend(chategNetworkMessage);
+	}
+
+	
+	void ChategNetwork::Stop()
+	{
+		MessageSend(new ChategNetworkMessage(ChategNetworkMessage::MessageType::Unregister, _domainMode ? _clientID : std::string(".") + "$" + _clientName));
 	}
 }
