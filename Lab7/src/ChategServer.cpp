@@ -39,6 +39,7 @@ namespace Chateg
 
 	void ChategServer::ProcessMessages()
 	{
+		std::cout << "startingMsg";
 		while (true)
 		{
 			if (!_mailslot->HasMessages())
@@ -62,7 +63,12 @@ namespace Chateg
 
 					std::string newClientPipeName = "\\\\" + message->Data().substr(0, delimPosition) + "\\pipe\\" + message->Data().substr(delimPosition+1);
 
-					//TODO check for duplicates
+					for (auto client : _clients)
+					{
+						if (newClientPipeName == client->Name())
+							break;
+					}
+
 					_clients.push_back(new ClientSideNamedPipeConnection<ChategNetworkMessage>(newClientPipeName));
 				
 				}break;
@@ -82,9 +88,12 @@ namespace Chateg
 							break;
 					}
 
-					delete *current;
+					if (_clients.end() != current)
+					{
+						delete *current;
 
-					_clients.erase(current);
+						_clients.erase(current);
+					}					
 
 				}break;
 			}

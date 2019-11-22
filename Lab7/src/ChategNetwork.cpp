@@ -50,7 +50,7 @@ namespace Chateg
 
 		std::string inPipeName = "\\\\.\\pipe\\" + clientName;
 		
-		std::string outMailslotName = "\\\\" + (_domainMode ? domainName : std::string(".")) + "\\mailslot\\" + serverName;
+		std::string outMailslotName = "\\\\" + (_domainMode ? /*domainName*/std::string("*") : std::string(".")) + "\\mailslot\\" + serverName;
 
 
 		_inPipe = new ServerSideNamedPipeConnection<ChategNetworkMessage>(inPipeName);
@@ -63,7 +63,7 @@ namespace Chateg
 	{
 		if (_outMailslot->TryConnect())
 		{
-			ChategNetworkMessage* registrationMessage = new ChategNetworkMessage(ChategNetworkMessage::MessageType::Register, _domainMode ? _clientID : std::string(".") + "$" + _clientName);
+			ChategNetworkMessage* registrationMessage = new ChategNetworkMessage(ChategNetworkMessage::MessageType::Register, (_domainMode ? _clientID : std::string(".")) + "$" + _clientName);
 
 			_outMailslot->MessageSend(registrationMessage);
 
