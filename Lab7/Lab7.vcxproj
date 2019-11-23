@@ -42,6 +42,9 @@
     <ClInclude Include="src\ChategNetwork.hpp" />
     <ClInclude Include="src\ChategServer.hpp" />
     <ClInclude Include="src\MailslotConnection.hpp" />
+    <ClInclude Include="src\MessagePipe.hpp" />
+    <ClInclude Include="src\MessagePipeInput.hpp" />
+    <ClInclude Include="src\MessagePipeOutput.hpp" />
     <ClInclude Include="src\NamedPipeConnection.hpp" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\targetver.h" />
