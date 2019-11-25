@@ -25,6 +25,7 @@
     <ClCompile Include="src\ChategNetworkMessage.cpp" />
     <ClCompile Include="src\ChategNetwork.cpp" />
     <ClCompile Include="src\ChategServer.cpp" />
+    <ClCompile Include="src\GUIController.cpp" />
     <ClCompile Include="src\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -41,14 +42,20 @@
     <ClInclude Include="src\ChategNetworkMessage.hpp" />
     <ClInclude Include="src\ChategNetwork.hpp" />
     <ClInclude Include="src\ChategServer.hpp" />
+    <ClInclude Include="src\GUIController.hpp" />
+    <ClInclude Include="src\GUIRenderer.hpp" />
+    <ClInclude Include="src\InputController.hpp" />
+    <ClInclude Include="src\InputMessage.hpp" />
     <ClInclude Include="src\MailslotConnection.hpp" />
     <ClInclude Include="src\MessagePipe.hpp" />
     <ClInclude Include="src\MessagePipeInput.hpp" />
     <ClInclude Include="src\MessagePipeOutput.hpp" />
     <ClInclude Include="src\NamedPipeConnection.hpp" />
+    <ClInclude Include="src\RendererCommand.hpp" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\targetver.h" />
     <ClInclude Include="src\Tasks.hpp" />
+    <ClInclude Include="src\UserMessage.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

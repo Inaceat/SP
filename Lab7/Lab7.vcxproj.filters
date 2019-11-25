@@ -34,6 +34,12 @@
     <Filter Include="Chateg\GUI\MessagePipe">
       <UniqueIdentifier>{003d5e09-0b9a-49bc-ae54-20cb7dbefd6f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Chateg\GUI\Input">
+      <UniqueIdentifier>{2bd6fe0d-1835-48ee-879f-eeb2c0bcb7c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chateg\GUI\Renderer">
+      <UniqueIdentifier>{55faadfd-3f7d-48d9-8538-9d1202902fdd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -67,6 +73,9 @@
       <Filter>Chateg\Network</Filter>
     </ClCompile>
     <ClCompile Include="src\ChategGUICommand.cpp">
+      <Filter>Chateg\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GUIController.cpp">
       <Filter>Chateg\GUI</Filter>
     </ClCompile>
   </ItemGroup>
@@ -112,6 +121,24 @@
     </ClInclude>
     <ClInclude Include="src\MessagePipe.hpp">
       <Filter>Chateg\GUI\MessagePipe</Filter>
+    </ClInclude>
+    <ClInclude Include="src\InputMessage.hpp">
+      <Filter>Chateg\GUI\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="src\InputController.hpp">
+      <Filter>Chateg\GUI\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GUIController.hpp">
+      <Filter>Chateg\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GUIRenderer.hpp">
+      <Filter>Chateg\GUI\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UserMessage.hpp">
+      <Filter>Chateg\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RendererCommand.hpp">
+      <Filter>Chateg\GUI\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
