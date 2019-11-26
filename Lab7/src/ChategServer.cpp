@@ -10,17 +10,15 @@ namespace Chateg
 	ChategServer::ChategServer(std::string serverName)
 	{
 		_mailslot = new ServerSideMailslotConnection<NetworkMessage>("\\\\.\\mailslot\\" + serverName);
-	
-		_thread = CreateThread(nullptr, 0, MessageProcessingThread, this, CREATE_SUSPENDED, nullptr);
 	}
 	
 	ChategServer::~ChategServer()
 	{
-		TerminateThread(_thread, 1);//TODO send msg to thread
-		CloseHandle(_thread);
+		_isWorking = false;
+		_workerThread.join();
 	
 		for (auto client : _clients)
-			delete client;
+			delete client.second;
 	
 		delete _mailslot;
 	}
@@ -28,7 +26,8 @@ namespace Chateg
 
 	void ChategServer::Start()
 	{
-		ResumeThread(_thread);
+		_isWorking = true;
+		_workerThread = std::thread([this]() { this->ProcessMessages(); });
 	}
 
 	void ChategServer::Stop()
@@ -39,74 +38,64 @@ namespace Chateg
 
 	void ChategServer::ProcessMessages()
 	{
-		std::cout << "startingMsg";
-		while (true)
+		while (_isWorking)
 		{
 			if (!_mailslot->HasMessages())
 				continue;
 	
 			NetworkMessage* message = _mailslot->MessageReceive();
 	
-			//TODO
 			switch (message->Type())
 			{
 				case NetworkMessage::MessageType::Text:
-				{
-					for (auto client : _clients)
-						client->MessageSend(message);
-
-				}break;
+					ProcessTextMessage(message);
+					break;
 
 				case NetworkMessage::MessageType::Register:
-				{
-					auto delimPosition = message->Text().find('$');
-
-					std::string newClientPipeName = "\\\\" + message->Text().substr(0, delimPosition) + "\\pipe\\" + message->Text().substr(delimPosition+1);
-
-					for (auto client : _clients)
-					{
-						if (newClientPipeName == client->Name())
-							break;
-					}
-
-					_clients.push_back(new ClientSideNamedPipeConnection<NetworkMessage>(newClientPipeName));
-				
-				}break;
+					ProcessRegistrationMessage(message);
+					break;
 				
 				
 				case NetworkMessage::MessageType::Unregister:
-				{
-					auto delimPosition = message->Text().find('$');
-					
-					std::string unregisteringClientPipeName = "\\\\" + message->Text().substr(0, delimPosition) + "\\pipe\\" + message->Text().substr(delimPosition+1);
-
-					
-					auto current = _clients.begin();
-					for (; current != _clients.end(); ++current)
-					{						
-						if (unregisteringClientPipeName == (*current)->Name())
-							break;
-					}
-
-					if (_clients.end() != current)
-					{
-						delete *current;
-
-						_clients.erase(current);
-					}					
-
-				}break;
+					ProcessDeregistrationMessage(message);
+					break;
 			}
 	
 			delete message;
 		}
 	}
-	
-	
-	DWORD WINAPI ChategServer::MessageProcessingThread(LPVOID threadParam)
+
+
+	void ChategServer::ProcessTextMessage(NetworkMessage* message)
 	{
-		static_cast<ChategServer*>(threadParam)->ProcessMessages();
-	
-		return 0;
+		for (auto client : _clients)
+		{
+			std::cout << "Sending \"" << message->Text() << "\" from \"" << message->Sender() << "\" to \"" << client.second->Name() << "\" as \"" << client.first << "\"" << std::endl;
+			client.second->MessageSend(message);
+		}
+	}
+
+	void ChategServer::ProcessRegistrationMessage(NetworkMessage* message)
+	{
+		if (_clients.end() == _clients.find(message->Sender()))
+		{
+			std::string newClientPipeName = "\\\\" + message->Text() + "\\pipe\\" + message->Sender();
+
+			//std::string newClientPipeName = "\\\\.\\pipe\\" + message->Sender();TODO
+
+			_clients.insert(std::make_pair(message->Sender(), new ClientSideNamedPipeConnection<NetworkMessage>(newClientPipeName)));
+
+			std::cout << "Registered \"" << newClientPipeName << "\" as \"" << message->Sender() << "\"" << std::endl;
+		}
+	}
+
+	void ChategServer::ProcessDeregistrationMessage(NetworkMessage* message)
+	{
+		if (_clients.end() != _clients.find(message->Sender()))
+		{
+			delete _clients[message->Sender()];
+
+			_clients.erase(message->Sender());
+		}
 	}
 }

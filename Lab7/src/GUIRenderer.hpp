@@ -138,7 +138,12 @@ namespace Chateg
 
 		void ShowNetworkStatus(std::string newStatus)
 		{
+			static std::string emptyStatus(_mainScreenInfo.dwSize.X - _networkStatusLabel.length(), ' ');
+
 			DWORD written;
+
+			SetConsoleCursorPosition(_mainScreenBuffer, { (SHORT)_networkStatusLabel.length(), 0 });
+			WriteConsole(_mainScreenBuffer, emptyStatus.c_str(), emptyStatus.size(), &written, nullptr);
 
 			SetConsoleCursorPosition(_mainScreenBuffer, { (SHORT)_networkStatusLabel.length(), 0 });
 			WriteConsole(_mainScreenBuffer, newStatus.c_str(), newStatus.size(), &written, nullptr);

@@ -5,6 +5,7 @@
 
 #include "MailslotConnection.hpp"
 #include "NamedPipeConnection.hpp"
+#include <map>
 
 
 namespace Chateg
@@ -22,16 +23,19 @@ namespace Chateg
 		void Stop();
 
 
-	private:
-		static DWORD WINAPI MessageProcessingThread(LPVOID threadParam);
-		
+	private:		
 		void ProcessMessages();
-	
+
+		void ProcessTextMessage(NetworkMessage* message);
+		void ProcessRegistrationMessage(NetworkMessage* message);
+		void ProcessDeregistrationMessage(NetworkMessage* message);
+
 	private:
-		HANDLE _thread;
+		bool _isWorking;
+		std::thread _workerThread;
 
 		ServerSideMailslotConnection<NetworkMessage>* _mailslot;
 	
-		std::vector<ClientSideNamedPipeConnection<NetworkMessage>*> _clients;
+		std::map<std::string, ClientSideNamedPipeConnection<NetworkMessage>*> _clients;
 	};
 }

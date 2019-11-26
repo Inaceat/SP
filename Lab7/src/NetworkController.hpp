@@ -30,6 +30,7 @@ namespace Chateg
 
 
 	private:
+		std::string _connectedAsName;
 		std::string _clientID;
 
 		bool _domainMode;

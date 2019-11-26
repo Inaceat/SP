@@ -78,7 +78,7 @@ public:
 
 	~ClientSideMailslotConnection()
 	{
-		CloseHandle(_mailslotHandle);
+		Disconnect();
 	}
 
 
@@ -89,6 +89,10 @@ public:
 		return INVALID_HANDLE_VALUE != _mailslotHandle;
 	}
 
+	void Disconnect()
+	{
+		CloseHandle(_mailslotHandle);
+	}
 
 	void MessageSend(const TMessage* message)
 	{

@@ -43,12 +43,7 @@ namespace Chateg
 
 	void NetworkController::Start(const std::string& serverName)
 	{
-		std::string inPipeName = "\\\\.\\pipe\\" + _clientID;
-		
 		std::string outMailslotName = std::string("\\\\") + (_domainMode ? "*" : ".") + "\\mailslot\\" + serverName;
-
-
-		_inPipe = new ServerSideNamedPipeConnection<NetworkMessage>(inPipeName);
 
 		_outMailslot = new ClientSideMailslotConnection<NetworkMessage>(outMailslotName);
 	}
@@ -56,15 +51,32 @@ namespace Chateg
 
 	bool NetworkController::TryConnectToServerAs(std::string userName, int searchTimeout)
 	{
+		std::cout << "Trying to connect as \"" << userName << "\" from \"" << _clientID << "\"" << std::endl;
 		if (_outMailslot->TryConnect())
 		{
+			std::string inPipeName = "\\\\.\\pipe\\" + userName;
+
+			_inPipe = new ServerSideNamedPipeConnection<NetworkMessage>(inPipeName);
+
+
 			NetworkMessage* registrationMessage = new NetworkMessage(NetworkMessage::MessageType::Register, userName, _clientID);
 		
-			_outMailslot->MessageSend(registrationMessage);
+			MessageSend(registrationMessage);
 		
 			delete registrationMessage;
-		
-			return _inPipe->WaitConnection(searchTimeout);
+
+
+			bool connectionSuccessful = _inPipe->WaitConnection(searchTimeout);
+
+			if (connectionSuccessful)
+			{
+				_connectedAsName = userName;
+				return true;
+			}
+
+			delete _inPipe;
+			_inPipe = nullptr;
+			_outMailslot->Disconnect();
 		}
 		
 		return false;
@@ -87,12 +99,13 @@ namespace Chateg
 
 	void NetworkController::MessageSend(NetworkMessage* chategNetworkMessage)
 	{
+		std::cout << "Sending \"" << chategNetworkMessage->Text() << "\" from \"" << chategNetworkMessage->Sender() << "\"" << std::endl;
 		_outMailslot->MessageSend(chategNetworkMessage);
 	}
 
 	
 	void NetworkController::Disconnect()
 	{
-		//MessageSend(new NetworkMessage(NetworkMessage::MessageType::Unregister, _domainMode ? _clientID : std::string(".") + "$" + _clientName));
+		MessageSend(new NetworkMessage(NetworkMessage::MessageType::Unregister, _connectedAsName, _clientID));
 	}
 }

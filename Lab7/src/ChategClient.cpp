@@ -31,7 +31,7 @@ namespace Chateg
 		_network.Start(_serverName);
 
 
-		const int searchTimeout = 10000;
+		const int searchTimeout = 5000;
 
 		_guiController.SetNetworkStatus("Connecting....");
 		bool serverFound = _network.TryConnectToServerAs(_clientName, searchTimeout);
@@ -46,6 +46,7 @@ namespace Chateg
 			
 			_server->Start();
 
+			_guiController.SetNetworkStatus("Trying to connect to local....");
 			serverFound = _network.TryConnectToServerAs(_clientName, searchTimeout);
 
 			if (serverFound)
@@ -69,11 +70,8 @@ namespace Chateg
 			{
 				//If exit command
 				if ("" == command->SenderName())
-				{
-					shouldWork = false;
 					break;
-				}
-				
+
 				//Else it's text message
 				_network.MessageSend(new NetworkMessage(NetworkMessage::MessageType::Text, _clientName, command->Text()));
 
