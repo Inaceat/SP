@@ -20,10 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ChategClient.cpp" />
-    <ClCompile Include="src\ChategGUI.cpp" />
-    <ClCompile Include="src\ChategGUICommand.cpp" />
-    <ClCompile Include="src\ChategNetworkMessage.cpp" />
-    <ClCompile Include="src\ChategNetwork.cpp" />
+    <ClCompile Include="src\NetworkMessage.cpp" />
+    <ClCompile Include="src\NetworkController.cpp" />
     <ClCompile Include="src\ChategServer.cpp" />
     <ClCompile Include="src\GUIController.cpp" />
     <ClCompile Include="src\stdafx.cpp">
@@ -37,10 +35,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ChategClient.hpp" />
-    <ClInclude Include="src\ChategGUI.hpp" />
-    <ClInclude Include="src\ChategGUICommand.hpp" />
-    <ClInclude Include="src\ChategNetworkMessage.hpp" />
-    <ClInclude Include="src\ChategNetwork.hpp" />
+    <ClInclude Include="src\NetworkMessage.hpp" />
+    <ClInclude Include="src\NetworkController.hpp" />
     <ClInclude Include="src\ChategServer.hpp" />
     <ClInclude Include="src\GUIController.hpp" />
     <ClInclude Include="src\GUIRenderer.hpp" />

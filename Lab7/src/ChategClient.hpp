@@ -1,9 +1,10 @@
 ﻿#pragma once
 
-#include "ChategGUI.hpp"
-#include "ChategNetwork.hpp"
+
+#include "NetworkController.hpp"
 
 #include "ChategServer.hpp"
+#include "GUIController.hpp"
 
 
 namespace Chateg
@@ -21,14 +22,10 @@ namespace Chateg
 	
 	private:
 		std::string _serverName;
-		
 		std::string _clientName;
-		std::string _clientID;
-	
-		ChategGUI _gui;
 		
-		ChategNetwork _network;
-
+		GUIController _guiController;
+		NetworkController _network;
 
 		ChategServer* _server = nullptr;
 	};

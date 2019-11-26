@@ -57,26 +57,20 @@
     <ClCompile Include="src\Task3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChategGUI.cpp">
-      <Filter>Chateg\GUI</Filter>
-    </ClCompile>
     <ClCompile Include="src\ChategClient.cpp">
       <Filter>Chateg\Client</Filter>
     </ClCompile>
     <ClCompile Include="src\ChategServer.cpp">
       <Filter>Chateg\Server</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChategNetwork.cpp">
-      <Filter>Chateg\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChategNetworkMessage.cpp">
-      <Filter>Chateg\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChategGUICommand.cpp">
-      <Filter>Chateg\GUI</Filter>
-    </ClCompile>
     <ClCompile Include="src\GUIController.cpp">
       <Filter>Chateg\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NetworkController.cpp">
+      <Filter>Chateg\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NetworkMessage.cpp">
+      <Filter>Chateg\Network</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -95,23 +89,11 @@
     <ClInclude Include="src\NamedPipeConnection.hpp">
       <Filter>Chateg\Network\Connections</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChategGUI.hpp">
-      <Filter>Chateg\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="src\ChategClient.hpp">
       <Filter>Chateg\Client</Filter>
     </ClInclude>
     <ClInclude Include="src\ChategServer.hpp">
       <Filter>Chateg\Server</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChategNetwork.hpp">
-      <Filter>Chateg\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChategNetworkMessage.hpp">
-      <Filter>Chateg\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChategGUICommand.hpp">
-      <Filter>Chateg\GUI</Filter>
     </ClInclude>
     <ClInclude Include="src\MessagePipeInput.hpp">
       <Filter>Chateg\GUI\MessagePipe</Filter>
@@ -139,6 +121,12 @@
     </ClInclude>
     <ClInclude Include="src\RendererCommand.hpp">
       <Filter>Chateg\GUI\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NetworkController.hpp">
+      <Filter>Chateg\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NetworkMessage.hpp">
+      <Filter>Chateg\Network</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

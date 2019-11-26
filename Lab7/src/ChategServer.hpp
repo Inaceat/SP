@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "ChategNetworkMessage.hpp"
+#include "NetworkMessage.hpp"
 
 
 #include "MailslotConnection.hpp"
@@ -30,8 +30,8 @@ namespace Chateg
 	private:
 		HANDLE _thread;
 
-		ServerSideMailslotConnection<ChategNetworkMessage>* _mailslot;
+		ServerSideMailslotConnection<NetworkMessage>* _mailslot;
 	
-		std::vector<ClientSideNamedPipeConnection<ChategNetworkMessage>*> _clients;
+		std::vector<ClientSideNamedPipeConnection<NetworkMessage>*> _clients;
 	};
 }

@@ -2,14 +2,14 @@
 
 
 #include "ChategServer.hpp"
-#include "ChategNetworkMessage.hpp"
+#include "NetworkMessage.hpp"
 
 
 namespace Chateg
 {
 	ChategServer::ChategServer(std::string serverName)
 	{
-		_mailslot = new ServerSideMailslotConnection<ChategNetworkMessage>("\\\\.\\mailslot\\" + serverName);
+		_mailslot = new ServerSideMailslotConnection<NetworkMessage>("\\\\.\\mailslot\\" + serverName);
 	
 		_thread = CreateThread(nullptr, 0, MessageProcessingThread, this, CREATE_SUSPENDED, nullptr);
 	}
@@ -45,23 +45,23 @@ namespace Chateg
 			if (!_mailslot->HasMessages())
 				continue;
 	
-			ChategNetworkMessage* message = _mailslot->MessageReceive();
+			NetworkMessage* message = _mailslot->MessageReceive();
 	
 			//TODO
 			switch (message->Type())
 			{
-				case ChategNetworkMessage::MessageType::Text:
+				case NetworkMessage::MessageType::Text:
 				{
 					for (auto client : _clients)
 						client->MessageSend(message);
 
 				}break;
 
-				case ChategNetworkMessage::MessageType::Register:
+				case NetworkMessage::MessageType::Register:
 				{
-					auto delimPosition = message->Data().find('$');
+					auto delimPosition = message->Text().find('$');
 
-					std::string newClientPipeName = "\\\\" + message->Data().substr(0, delimPosition) + "\\pipe\\" + message->Data().substr(delimPosition+1);
+					std::string newClientPipeName = "\\\\" + message->Text().substr(0, delimPosition) + "\\pipe\\" + message->Text().substr(delimPosition+1);
 
 					for (auto client : _clients)
 					{
@@ -69,16 +69,16 @@ namespace Chateg
 							break;
 					}
 
-					_clients.push_back(new ClientSideNamedPipeConnection<ChategNetworkMessage>(newClientPipeName));
+					_clients.push_back(new ClientSideNamedPipeConnection<NetworkMessage>(newClientPipeName));
 				
 				}break;
 				
 				
-				case ChategNetworkMessage::MessageType::Unregister:
+				case NetworkMessage::MessageType::Unregister:
 				{
-					auto delimPosition = message->Data().find('$');
+					auto delimPosition = message->Text().find('$');
 					
-					std::string unregisteringClientPipeName = "\\\\" + message->Data().substr(0, delimPosition) + "\\pipe\\" + message->Data().substr(delimPosition+1);
+					std::string unregisteringClientPipeName = "\\\\" + message->Text().substr(0, delimPosition) + "\\pipe\\" + message->Text().substr(delimPosition+1);
 
 					
 					auto current = _clients.begin();

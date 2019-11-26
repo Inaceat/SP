@@ -1,5 +1,6 @@
 #pragma once
-
+//TODO yes, I know
+#pragma warning(disable: 4267)
 
 namespace Chateg
 {

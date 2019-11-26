@@ -23,28 +23,38 @@ namespace Chateg
 	
 	void ChategClient::Start()
 	{
-		_gui.Start();
+		_guiController.Start();
+		_guiController.SetNetworkStatus("Offline");
 	
+		_clientName = _guiController.AskClientName();
 	
-		_clientName = _gui.AskClientName();
-	
-		_network.Start(_serverName, _clientName);
+		_network.Start(_serverName);
 
 
 		const int searchTimeout = 10000;
 
-		bool serverFound = _network.TryConnectToServer(searchTimeout);
+		_guiController.SetNetworkStatus("Connecting....");
+		bool serverFound = _network.TryConnectToServerAs(_clientName, searchTimeout);
 
-		if (!serverFound)
+		if (serverFound)
+		{
+			_guiController.SetNetworkStatus("Connected");
+		}
+		else
 		{
 			_server = new ChategServer(_serverName);
 			
 			_server->Start();
 
-			serverFound = _network.TryConnectToServer(searchTimeout);
+			serverFound = _network.TryConnectToServerAs(_clientName, searchTimeout);
 
-			if (!serverFound)
-				throw std::string("AAA can't connect to local server");
+			if (serverFound)
+				_guiController.SetNetworkStatus("Local server"); 
+			else
+			{
+				_guiController.SetNetworkStatus("Local server failed to start");
+				throw std::exception("Local server failed");
+			}
 		}
 
 
@@ -54,36 +64,31 @@ namespace Chateg
 
 		while (shouldWork)
 		{
-			ChategGUICommand* command = _gui.CommandReceive(timeout);
+			UserMessage* command = _guiController.TryGetUserCommand(timeout);
 			if (nullptr != command)
 			{
-				switch (command->Type())
+				//If exit command
+				if ("" == command->SenderName())
 				{
-					case ChategGUICommand::CommandType::Message:
-					{
-						_network.MessageSend(new ChategNetworkMessage("[" + _clientName + "]" + command->Data()));
-						break;
-					}
-
-					case ChategGUICommand::CommandType::Quit:
-					{
-						shouldWork = false;
-						break;
-					}
+					shouldWork = false;
+					break;
 				}
+				
+				//Else it's text message
+				_network.MessageSend(new NetworkMessage(NetworkMessage::MessageType::Text, _clientName, command->Text()));
 
 				delete command;
 			}
 
 
-			ChategNetworkMessage* message = _network.MessageReceive(timeout);
+			NetworkMessage* message = _network.MessageReceive(timeout);
 			if (nullptr != message)
 			{
 				switch (message->Type())
 				{
-					case ChategNetworkMessage::MessageType::Text:
+					case NetworkMessage::MessageType::Text:
 					{
-						_gui.ShowMessage(message->Data());
+						_guiController.ShowMessage(new UserMessage(message->Sender(), message->Text()));
 						break;
 					}
 
@@ -95,6 +100,6 @@ namespace Chateg
 			}
 		}
 
-		_network.Stop();
+		_network.Disconnect();
 	}
 }
