@@ -14,6 +14,15 @@ namespace Chateg
 {
 	class GUIController
 	{
+	private:
+		enum class ActiveGUIElement
+		{
+			None,
+			Username,
+			Message
+		};
+
+
 	public:
 		GUIController();
 
@@ -23,9 +32,11 @@ namespace Chateg
 		void Start();
 
 
+		void SetNetworkStatus(std::string newStatus);
+
 		std::string AskClientName();
 
-		UserMessage* TryGetUserMessage(int timeout);
+		UserMessage* TryGetUserCommand(int timeout);
 
 		void ShowMessage(UserMessage* message);
 
@@ -33,6 +44,8 @@ namespace Chateg
 	private:
 		void Work();
 
+		void ProcessAsUsernameInput(InputMessage* inputMessage);
+		void ProcessAsMessageInput(InputMessage* inputMessage);
 
 	private:
 		bool _isWorking;
@@ -40,12 +53,16 @@ namespace Chateg
 
 
 		InputController* _inputController;
-
 		GUIRenderer* _renderer;
 
+		std::mutex _activeElementGuard;
+		ActiveGUIElement _activeElement;
 
+		std::vector<std::string> _messages;
+		std::string _message;
+		std::string _username;
 
-		//std::mutex _messagesQueueGuard;
-		//std::queue<UserMessage*> _messages;
+		MessagePipeInput<UserMessage>* _userCommandsIn;
+		MessagePipeOutput<UserMessage>* _userCommandsOut;
 	};
 }

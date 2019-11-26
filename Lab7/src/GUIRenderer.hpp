@@ -1,32 +1,18 @@
 #pragma once
 
 
-//#include "RendererCommand.hpp"
-//#include "MessagePipe.hpp"
-
-
 namespace Chateg
 {
 	class GUIRenderer
 	{
 	public:
 		GUIRenderer() :
-			//_isWorking(false),
 			_oldScreenBuffer(nullptr),
 			_mainScreenBuffer(nullptr)
-		{
-			//CreateMessagePipe(_commandsIn, _commandsOut);
-		}
+		{}
 
 		~GUIRenderer()
 		{
-			//_isWorking = false;
-			//_workerThread.join();
-			//
-			//delete _commandsIn;
-			//delete _commandsOut;
-
-
 			SetConsoleActiveScreenBuffer(_oldScreenBuffer);
 
 			CloseHandle(_mainScreenBuffer);
@@ -46,7 +32,10 @@ namespace Chateg
 			std::string line(_mainScreenInfo.dwSize.X, '-');
 			
 			DWORD written;
-			
+
+			SetConsoleCursorPosition(_mainScreenBuffer, { 0, 0 });
+			WriteConsole(_mainScreenBuffer, _networkStatusLabel.c_str(), _networkStatusLabel.size(), &written, nullptr);
+
 			SetConsoleCursorPosition(_mainScreenBuffer, {0, 1});
 			WriteConsole(_mainScreenBuffer, line.c_str(), line.size(), &written, nullptr);
 
@@ -58,11 +47,6 @@ namespace Chateg
 
 
 			SetConsoleActiveScreenBuffer(_mainScreenBuffer);
-
-
-			////Worker
-			//_isWorking = true;
-			//_workerThread = std::thread( [this]() { this->Work(); } );
 		}
 
 
@@ -151,31 +135,21 @@ namespace Chateg
 			WriteConsole(_mainScreenBuffer, userName.c_str(), userName.size(), &written, nullptr);
 		}
 
-
-	/*private:
-		void Work()
+		void ShowNetworkStatus(std::string newStatus)
 		{
-			while (_isWorking)
-			{
+			DWORD written;
 
-			}
-		}*/
+			SetConsoleCursorPosition(_mainScreenBuffer, { (SHORT)_networkStatusLabel.length(), 0 });
+			WriteConsole(_mainScreenBuffer, newStatus.c_str(), newStatus.size(), &written, nullptr);
+		}
 
 
-	
 	private:
-		//Seems like we don't need this
-		//bool _isWorking;
-		//std::thread _workerThread;
-		//
-		//MessagePipeInput<RendererCommand>* _commandsIn;
-		//MessagePipeOutput<RendererCommand>* _commandsOut;
-
-
 		HANDLE _oldScreenBuffer;
 		
 		HANDLE _mainScreenBuffer;
 		CONSOLE_SCREEN_BUFFER_INFO _mainScreenInfo;
 
+		std::string _networkStatusLabel = "Network status: ";
 	};
 }
