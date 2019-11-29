@@ -67,7 +67,7 @@ namespace Chateg
 
 
 			bool connectionSuccessful = _inPipe->WaitConnection(searchTimeout);
-
+			std::cout << "Pipe wait resulted in " << connectionSuccessful << std::endl;
 			if (connectionSuccessful)
 			{
 				_connectedAsName = userName;

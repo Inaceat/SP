@@ -32,10 +32,13 @@ public:
 		overlapInfo.hEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
 
 		auto connectionResult = ConnectNamedPipe(_pipeHandle, &overlapInfo);
-		
+		std::cout << "ConnectNamedPipe returned " << connectionResult << ", err == " << GetLastError() << std::endl;
+
 		if (FALSE == connectionResult && ERROR_IO_PENDING == GetLastError())
 		{
 			DWORD waitResult = WaitForSingleObject(overlapInfo.hEvent, timeout);
+
+			std::cout << "ConnectNamedPipe wait resulted in " << waitResult << ", err == " << GetLastError() << std::endl;
 
 			if (WAIT_TIMEOUT == waitResult)
 				CancelIo(_pipeHandle);
@@ -132,6 +135,8 @@ public:
 		_name = name;
 
 		_pipeHandle = CreateFile(name.c_str(), GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, 0, nullptr);
+
+		std::cout << "Pipe handle for \"" << name << "\" created, == " << _pipeHandle << " err == " << GetLastError() << std::endl;
 	}
 
 	~ClientSideNamedPipeConnection()

@@ -31,7 +31,7 @@ namespace Chateg
 		_network.Start(_serverName);
 
 
-		const int searchTimeout = 5000;
+		const int searchTimeout = 10000;
 
 		_guiController.SetNetworkStatus("Connecting....");
 		bool serverFound = _network.TryConnectToServerAs(_clientName, searchTimeout);
