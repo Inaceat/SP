@@ -59,7 +59,11 @@ namespace Chateg
 					continue;
 				}
 
-				switch (_activeElement)
+				_activeElementGuard.lock();
+				auto currentActive = _activeElement;
+				_activeElementGuard.unlock();
+
+				switch (currentActive)
 				{
 					case ActiveGUIElement::Username: 
 					{
@@ -157,8 +161,14 @@ namespace Chateg
 		_activeElement = ActiveGUIElement::Username;
 		_activeElementGuard.unlock();
 
-		while (ActiveGUIElement::Username == _activeElement)
+		while (true)
 		{
+			_activeElementGuard.lock();
+			auto currentActive = _activeElement;
+			_activeElementGuard.unlock();
+
+			if (ActiveGUIElement::Username != currentActive)
+				break;
 			//Do nothing, wait till username input ends
 		}
 		
