@@ -11,6 +11,17 @@ private:
 public:
 	ServerSideNamedPipeConnection(std::string name)
 	{
+		SECURITY_DESCRIPTOR sd;
+		InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
+		SetSecurityDescriptorDacl(&sd, TRUE, nullptr, FALSE);
+
+
+
+		SECURITY_ATTRIBUTES sa;
+		sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+		sa.lpSecurityDescriptor = &sd;
+		sa.bInheritHandle = TRUE;
+
 		_pipeHandle = CreateNamedPipe(
 			name.c_str(), 
 			PIPE_ACCESS_INBOUND | FILE_FLAG_OVERLAPPED,
@@ -19,7 +30,9 @@ public:
 			1024,
 			1024,
 			0,
-			nullptr);
+			&sa);
+
+
 	}
 
 	bool WaitConnection(int timeout)
@@ -132,6 +145,9 @@ public:
 		_name = name;
 
 		_pipeHandle = CreateFile(name.c_str(), GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, 0, nullptr);
+
+		if (INVALID_HANDLE_VALUE == _pipeHandle)
+			std::cout << "ClientPipe creation failed with error " << GetLastError() << std::endl;
 	}
 
 	~ClientSideNamedPipeConnection()
