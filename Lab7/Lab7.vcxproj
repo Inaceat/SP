@@ -20,6 +20,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ChategClient.cpp" />
+    <ClCompile Include="src\GUIRenderer.cpp" />
+    <ClCompile Include="src\InputController.cpp" />
+    <ClCompile Include="src\InputMessage.cpp" />
     <ClCompile Include="src\NetworkMessage.cpp" />
     <ClCompile Include="src\NetworkController.cpp" />
     <ClCompile Include="src\ChategServer.cpp" />
@@ -32,6 +35,7 @@
     <ClCompile Include="src\Task1.cpp" />
     <ClCompile Include="src\Task2.cpp" />
     <ClCompile Include="src\Task3.cpp" />
+    <ClCompile Include="src\UserMessage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ChategClient.hpp" />
@@ -47,7 +51,6 @@
     <ClInclude Include="src\MessagePipeInput.hpp" />
     <ClInclude Include="src\MessagePipeOutput.hpp" />
     <ClInclude Include="src\NamedPipeConnection.hpp" />
-    <ClInclude Include="src\RendererCommand.hpp" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\targetver.h" />
     <ClInclude Include="src\Tasks.hpp" />

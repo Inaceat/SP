@@ -2,9 +2,9 @@
 
 #include "NetworkMessage.hpp"
 
-
 #include "MailslotConnection.hpp"
 #include "NamedPipeConnection.hpp"
+
 #include <map>
 
 
@@ -19,8 +19,6 @@ namespace Chateg
 	
 	
 		void Start();
-		
-		void Stop();
 
 
 	private:		

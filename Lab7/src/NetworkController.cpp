@@ -51,7 +51,6 @@ namespace Chateg
 
 	bool NetworkController::TryConnectToServerAs(std::string userName, int searchTimeout)
 	{
-		std::cout << "Trying to connect as \"" << userName << "\" from \"" << _clientID << "\"" << std::endl;
 		if (_outMailslot->TryConnect())
 		{
 			std::string inPipeName = "\\\\.\\pipe\\" + userName;
@@ -66,9 +65,7 @@ namespace Chateg
 			delete registrationMessage;
 
 
-			bool connectionSuccessful = _inPipe->WaitConnection(searchTimeout);
-			std::cout << "Pipe wait resulted in " << connectionSuccessful << std::endl;
-			if (connectionSuccessful)
+			if (_inPipe->WaitConnection(searchTimeout))
 			{
 				_connectedAsName = userName;
 				return true;
@@ -85,11 +82,10 @@ namespace Chateg
 
 	NetworkMessage* NetworkController::MessageReceive(int timeout)
 	{
-		//TODO assuming message is never splitted, probably I'm wrong :)
 		if(_inPipe->HasMessages())
 			return _inPipe->MessageReceive();
 
-		Sleep(timeout);//oh shi..
+		Sleep(timeout);
 
 		if (_inPipe->HasMessages())
 			return _inPipe->MessageReceive();
@@ -99,7 +95,6 @@ namespace Chateg
 
 	void NetworkController::MessageSend(NetworkMessage* chategNetworkMessage)
 	{
-		std::cout << "Sending \"" << chategNetworkMessage->Text() << "\" from \"" << chategNetworkMessage->Sender() << "\"" << std::endl;
 		_outMailslot->MessageSend(chategNetworkMessage);
 	}
 

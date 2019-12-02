@@ -72,6 +72,18 @@
     <ClCompile Include="src\NetworkMessage.cpp">
       <Filter>Chateg\Network</Filter>
     </ClCompile>
+    <ClCompile Include="src\InputController.cpp">
+      <Filter>Chateg\GUI\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="src\InputMessage.cpp">
+      <Filter>Chateg\GUI\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GUIRenderer.cpp">
+      <Filter>Chateg\GUI\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UserMessage.cpp">
+      <Filter>Chateg\Client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
@@ -116,17 +128,14 @@
     <ClInclude Include="src\GUIRenderer.hpp">
       <Filter>Chateg\GUI\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\UserMessage.hpp">
-      <Filter>Chateg\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="src\RendererCommand.hpp">
-      <Filter>Chateg\GUI\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\NetworkController.hpp">
       <Filter>Chateg\Network</Filter>
     </ClInclude>
     <ClInclude Include="src\NetworkMessage.hpp">
       <Filter>Chateg\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UserMessage.hpp">
+      <Filter>Chateg\Client</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

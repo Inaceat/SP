@@ -14,8 +14,6 @@ namespace Chateg
 	{
 		if (nullptr != _server)
 		{
-			_server->Stop();
-
 			delete _server;
 		}
 	}
@@ -31,7 +29,7 @@ namespace Chateg
 		_network.Start(_serverName);
 
 
-		const int searchTimeout = 10000;
+		const int searchTimeout = 4000;
 
 		_guiController.SetNetworkStatus("Connecting....");
 		bool serverFound = _network.TryConnectToServerAs(_clientName, searchTimeout);

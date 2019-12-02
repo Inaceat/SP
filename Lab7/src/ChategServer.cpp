@@ -30,11 +30,6 @@ namespace Chateg
 		_workerThread = std::thread([this]() { this->ProcessMessages(); });
 	}
 
-	void ChategServer::Stop()
-	{
-
-	}
-
 
 	void ChategServer::ProcessMessages()
 	{
@@ -80,8 +75,6 @@ namespace Chateg
 		if (_clients.end() == _clients.find(message->Sender()))
 		{
 			std::string newClientPipeName = "\\\\" + message->Text() + "\\pipe\\" + message->Sender();
-
-			//std::string newClientPipeName = "\\\\.\\pipe\\" + message->Sender();TODO
 
 			_clients.insert(std::make_pair(message->Sender(), new ClientSideNamedPipeConnection<NetworkMessage>(newClientPipeName)));
 

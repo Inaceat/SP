@@ -80,18 +80,18 @@ public:
 	{
 		DWORD nextMessageSize;
 
-		if (TRUE == PeekNamedPipe(_pipeHandle, nullptr, 0, nullptr, nullptr, &nextMessageSize) && 0 != nextMessageSize)//TODO check overlap?
+		if (TRUE == PeekNamedPipe(_pipeHandle, nullptr, 0, nullptr, nullptr, &nextMessageSize) && 0 != nextMessageSize)
 			return true;
 
 		return false;
 		
 	}
 
-	TMessage* MessageReceive(/*int timeout*/)
+	TMessage* MessageReceive()
 	{
 		DWORD nextMessageSize;
 
-		PeekNamedPipe(_pipeHandle, nullptr, 0, nullptr, nullptr, &nextMessageSize);//TODO check overlap?
+		PeekNamedPipe(_pipeHandle, nullptr, 0, nullptr, nullptr, &nextMessageSize);
 		
 		if(0 == nextMessageSize)
 			return nullptr;
@@ -105,19 +105,9 @@ public:
 		overlapInfo.hEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
 
 
-		/*bool readSuccessful = */ReadFile(_pipeHandle, messageBuffer, nextMessageSize, &readBytes, &overlapInfo);
-		WaitForSingleObject(overlapInfo.hEvent, INFINITE);
-		//if (false == readSuccessful)
-		//	readSuccessful = ERROR_IO_PENDING == GetLastError();
-		//
-		//if (!readSuccessful)
-		//{
-		//	delete[] messageBuffer;
-		//
-		//	return nullptr;
-		//}
-
+		ReadFile(_pipeHandle, messageBuffer, nextMessageSize, &readBytes, &overlapInfo);
 		
+		WaitForSingleObject(overlapInfo.hEvent, INFINITE);
 
 
 		TMessage* result = TMessage::Create(messageBuffer, readBytes);

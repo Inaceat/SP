@@ -4,10 +4,9 @@
 #include "MessagePipeInput.hpp"
 #include "MessagePipeOutput.hpp"
 
-
-#include <string>
-using namespace Chateg;
-class DummyMessage
+//Template for TMessage
+/*
+ class DummyMessage
 {
 public:
 	DummyMessage(std::string text) : _text(text){}
@@ -41,7 +40,7 @@ private:
 	{}
 
 	std::string _text;
-};
+};*/
 
 
 namespace Chateg

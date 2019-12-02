@@ -6,51 +6,21 @@ namespace Chateg
 	class UserMessage
 	{
 	public:
-		UserMessage(std::string senderName, std::string text) :
-			_senderName(senderName),
-			_text(text)
-		{}
+		UserMessage(std::string senderName, std::string text);
 
 
-		std::string SenderName() const
-		{
-			return _senderName;
-		}
+		std::string SenderName() const;
 
-		std::string Text() const
-		{
-			return _text;
-		}
+		std::string Text() const;
 
 
-		char* GetMessageBytes(int* messageLength)
-		{
-			*messageLength = _senderName.size() + 1 + _text.size() + 1;
+		char* GetMessageBytes(int* messageLength);
 
-			char* bytes = new char[*messageLength];
-
-
-			memcpy_s(bytes, _senderName.size() + 1, _senderName.c_str(), _senderName.size() + 1);
-
-			memcpy_s(bytes + _senderName.size() + 1, _text.size() + 1, _text.c_str(), _text.size() + 1);
-
-			
-			return bytes;
-		}
-
-		static UserMessage* Create(char* bytes, int bytesSize)
-		{
-			return new UserMessage(bytes, bytesSize);
-		}
+		static UserMessage* Create(char* bytes, int bytesSize);
 
 
 	private:
-		UserMessage(char* bytes, int bytesSize)
-		{
-			_senderName = std::string(bytes);
-
-			_text = std::string(bytes + _senderName.size() + 1);
-		}
+		UserMessage(char* bytes, int bytesSize);
 
 	private:
 		std::string _senderName;

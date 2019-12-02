@@ -5,7 +5,6 @@
 #include "InputMessage.hpp"
 
 #include "GUIRenderer.hpp"
-#include "RendererCommand.hpp"
 
 #include "UserMessage.hpp"
 

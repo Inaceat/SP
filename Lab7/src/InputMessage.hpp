@@ -6,62 +6,27 @@ namespace Chateg
 	class InputMessage
 	{
 	public:
-		explicit InputMessage(KEY_EVENT_RECORD keyInputInfo) :
-			_keyInputInfo(keyInputInfo)
-		{}
+		explicit InputMessage(KEY_EVENT_RECORD keyInputInfo);
 
 
-		char* GetMessageBytes(int* messageLength)
-		{
-			*messageLength = sizeof(KEY_EVENT_RECORD);
+		char* GetMessageBytes(int* messageLength);
 
-			char* bytes = new char[*messageLength];
-
-			memcpy_s(bytes, *messageLength, &_keyInputInfo, sizeof(KEY_EVENT_RECORD));
-
-			return bytes;
-		}
-
-		static InputMessage* Create(char* bytes, int bytesSize)
-		{
-			return new InputMessage(bytes, bytesSize);
-		}
+		static InputMessage* Create(char* bytes, int bytesSize);
 
 
-		bool IsLetterInput()
-		{
-			return (0x41 <= _keyInputInfo.wVirtualKeyCode && _keyInputInfo.wVirtualKeyCode <= 0x5A);
-		}
+		bool IsLetterInput() const;
 
-		char Letter()
-		{
-			return _keyInputInfo.uChar.AsciiChar;
-		}
+		char Letter() const;
 
-		bool IsEnter()
-		{
-			return VK_RETURN == _keyInputInfo.wVirtualKeyCode;
-		}
+		bool IsEnter() const;
 
-		bool IsBackspace()
-		{
-			return VK_BACK == _keyInputInfo.wVirtualKeyCode;
-		}
+		bool IsBackspace() const;
 
-		bool IsEscape()
-		{
-			return VK_ESCAPE == _keyInputInfo.wVirtualKeyCode;
-		}
+		bool IsEscape() const;
 
 
 	private:
-		InputMessage(char* bytes, int bytesSize)
-		{
-			if (sizeof(KEY_EVENT_RECORD) < bytesSize)
-				bytesSize = sizeof(KEY_EVENT_RECORD);
-
-			memcpy_s(&_keyInputInfo, sizeof(KEY_EVENT_RECORD), bytes, bytesSize);
-		}
+		InputMessage(char* bytes, int bytesSize);
 
 
 	private:

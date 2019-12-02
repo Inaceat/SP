@@ -10,57 +10,19 @@ namespace Chateg
 	class InputController
 	{
 	public:
-		InputController() :
-			_isWorking(false)
-		{
-			CreateMessagePipe(_userInputIn, _userInputOut);
-		}
+		InputController();
 
-		~InputController()
-		{
-			_isWorking = false;
-			_workerThread.join();
-
-			delete _userInputIn;
-			delete _userInputOut;
-		}
+		~InputController();
 
 
-		void Start()
-		{
-			_isWorking = true;
-			_workerThread = std::thread( [this]() { this->Work(); } );
-		}
+		void Start();
 
 
-		InputMessage* TryGetUserInput(int timeout) const
-		{
-			return _userInputOut->MessageGet(timeout);
-		}
+		InputMessage* TryGetUserInput(int timeout) const;
 
 
 	private:
-		void Work()
-		{
-			DWORD timeout = 20;
-
-			HANDLE inputHandle = GetStdHandle(STD_INPUT_HANDLE);
-			INPUT_RECORD inputRecord;
-			DWORD readEvents;
-
-			while (_isWorking)
-			{
-				if (WAIT_OBJECT_0 != WaitForSingleObject(inputHandle, timeout))
-					continue;
-
-				ReadConsoleInput(inputHandle, &inputRecord, 1, &readEvents);
-
-				if (0 != readEvents && KEY_EVENT == inputRecord.EventType && inputRecord.Event.KeyEvent.bKeyDown)
-				{
-					_userInputIn->MessagePost(new InputMessage(inputRecord.Event.KeyEvent));
-				}
-			}
-		}
+		void Work();
 
 
 	private:
