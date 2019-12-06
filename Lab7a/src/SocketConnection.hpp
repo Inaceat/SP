@@ -12,9 +12,13 @@ public:
 	{}
 
 
-	char* GetMessageBytes(size_t* bytesSize)
+	TextMessage(char* bytes, int bytesSize) :
+		_text(bytes)
+	{}
+
+	char* GetMessageBytes(int* bytesSize)
 	{
-		*bytesSize = _text.size() + 1;
+		*bytesSize = static_cast<int>(_text.size()) + 1;
 
 		char* bytes = new char[*bytesSize];
 
@@ -23,15 +27,11 @@ public:
 		return bytes;
 	}
 
-	static TextMessage Create(char* bytes, int bytesSize)
-	{
-		return TextMessage(bytes, bytesSize);
-	}
 
-private:
-	TextMessage(char* bytes, int bytesSize) :
-		_text(bytes, bytesSize)
-	{}
+	std::string Text() const
+	{
+		return _text;
+	}
 
 
 private:
@@ -39,16 +39,27 @@ private:
 };
 
 
+
+template<typename TMessage>
+class ServerSocketTCP;
+
+
 template<typename TMessage>
 class ClientSocketTCP
 {
 private:
+	ClientSocketTCP(SOCKET socket) :
+		_socket(new SOCKET)
+	{
+		*_socket = socket;
+	}
+
 	ClientSocketTCP(ClientSocketTCP& other) = delete;//TODO wupwupwupwupwupwup
 	void operator=(ClientSocketTCP& other) = delete;
 
 public:
 	//Address should be formatted as "IP1.IP2.IP3.IP4:PORT"
-	ClientSocketTCP(std::string address) :
+	explicit ClientSocketTCP(std::string address) :
 		_socket(new SOCKET)
 	{
 		//TODO validate {address}?
@@ -91,39 +102,80 @@ public:
 
 	void Send(TMessage message)
 	{
-		size_t messageLength;
-		
+		//Convert message to bytes
+		int messageLength;
 		char* messageBytes = message.GetMessageBytes(&messageLength);
 
+		//Allocate buffer
+		int bytesToSend = sizeof(messageLength) + messageLength;
+		char* bufferToSend = new char[bytesToSend];
 
-		int sizeToSend = sizeof(sizeToSend) + messageLength;
+		//Copy message size to buffer
+		memcpy_s(bufferToSend, bytesToSend, &messageLength, sizeof(messageLength));
 
-		char* bufferToSend = new char[sizeToSend];
-		
-		memcpy_s(bufferToSend, sizeToSend, &sizeToSend, sizeof(sizeToSend));
-
-		memcpy_s(bufferToSend + sizeof(sizeToSend), messageLength, messageBytes, messageLength);
+		//Copy message to buffer
+		memcpy_s(bufferToSend + sizeof(messageLength), messageLength, messageBytes, messageLength);
 
 		delete[] messageBytes;
 
-		
+		//Send
 		int bytesSent = 0;
-
-		while (sizeToSend > 0)
+		while (bytesToSend > 0)
 		{
-			int thisTimeBytesSent = send(*_socket, bufferToSend + bytesSent, sizeToSend, 0);
+			int thisTimeBytesSent = send(*_socket, bufferToSend + bytesSent, bytesToSend, 0);
 
 			bytesSent += thisTimeBytesSent;
-			sizeToSend -= thisTimeBytesSent;
+			bytesToSend -= thisTimeBytesSent;
 		}
 
 		delete[] bufferToSend;
 	}
 
-	TMessage Receive(int timeout)
+	TMessage* TryReceive(int timeout)
 	{
+		//Get message length
+		int messageLength;
+
+		int lengthBufferSize = sizeof(messageLength);
+		char* lengthBuffer = new char[lengthBufferSize];
+
+		int bytesReceived = 0;
+		do
+		{
+			int thisTimeBytesReceived = recv(*_socket, lengthBuffer + bytesReceived, lengthBufferSize - bytesReceived, 0);
+			
+			bytesReceived += thisTimeBytesReceived;
+		}
+		while (bytesReceived < lengthBufferSize);
 		
+
+		memcpy_s(&messageLength, sizeof(messageLength), lengthBuffer, lengthBufferSize);
+
+		delete[] lengthBuffer;
+
+
+		//Get message
+		char* messageBuffer = new char[messageLength];
+
+		bytesReceived = 0;
+		do
+		{
+			int thisTimeBytesReceived = recv(*_socket, messageBuffer + bytesReceived, messageLength - bytesReceived, 0);
+
+			bytesReceived += thisTimeBytesReceived;
+		}
+		while (bytesReceived < messageLength);
+
+
+		TMessage* result = new TMessage(messageBuffer, messageLength);
+
+		delete[] messageBuffer;
+
+		return result;
 	}
+
+
+	friend ClientSocketTCP<TMessage>* ServerSocketTCP<TMessage>::TryAcceptIncomingConnection(int timeout);
 
 private:
 	SOCKET* _socket;
@@ -135,22 +187,68 @@ class ServerSocketTCP
 {
 public:
 	//Address should be formatted as "IP1.IP2.IP3.IP4:PORT"
-	ServerSocketTCP(std::string address)
+	explicit ServerSocketTCP(std::string address) :
+		_socket(new SOCKET)
 	{
-		
+		//TODO validate {address}?
+		//TODO handle errors
+		//Create
+		*_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+		//Bind
+		sockaddr_in addressInfo;
+		ZeroMemory(&addressInfo, sizeof(sockaddr_in));
+
+		addressInfo.sin_family = AF_INET;
+		addressInfo.sin_port = htons(atoi(address.substr(address.find(":") + 1, std::string::npos).c_str()));
+		addressInfo.sin_addr.S_un.S_addr = inet_addr(address.substr(0, address.find(":")).c_str());
+
+		auto bindResult = bind(*_socket, reinterpret_cast<sockaddr*>(&addressInfo), sizeof(sockaddr));
+
+		//Set non-blocking mode
+		u_long mode = 1;
+		ioctlsocket(*_socket, FIONBIO, &mode);
+
+		//Start listening
+		auto listenResult = listen(*_socket, SOMAXCONN);
+		//if (0 != listenResult)
+		//{
+		//	std::cout << "[S]Socket listening failed: " << WSAGetLastError() << std::endl;
+		//	return;
+		//}
 	}
 
 	~ServerSocketTCP()
 	{
-		
+		closesocket(*_socket);
+
+		delete _socket;
 	}
 
 
-	ClientSocketTCP<TMessage> AcceptIncomingConnection(int timeout)
+	ClientSocketTCP<TMessage>* TryAcceptIncomingConnection(int timeout)
 	{
+		//Client info
+		sockaddr_in clientAddressInfo;
+		int clientAddressInfoSize = sizeof(sockaddr_in);
+
+		ZeroMemory(&clientAddressInfo, clientAddressInfoSize);
+
+		//Try
+		SOCKET clientConnectionSocket = accept(*_socket, reinterpret_cast<sockaddr*>(&clientAddressInfo), &clientAddressInfoSize);
 		
+		if (INVALID_SOCKET == clientConnectionSocket && WSAEWOULDBLOCK == GetLastError())
+			Sleep(timeout);
+
+		//Try again
+		clientConnectionSocket = accept(*_socket, reinterpret_cast<sockaddr*>(&clientAddressInfo), &clientAddressInfoSize);
+
+		if (INVALID_SOCKET == clientConnectionSocket)
+			return nullptr;
+
+		return new ClientSocketTCP<TMessage>(clientConnectionSocket);
 	}
 
 private:
-	
+	SOCKET* _socket;
 };

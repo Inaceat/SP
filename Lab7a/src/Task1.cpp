@@ -12,169 +12,87 @@
 
 void Server()
 {
-	//Create
-	SOCKET serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (INVALID_SOCKET == serverSocket)
+	ServerSocketTCP<TextMessage> serverSocket("127.0.0.1:42042");
+
+	ClientSocketTCP<TextMessage>* clientSocket = serverSocket.TryAcceptIncomingConnection(1000);
+	if (nullptr != clientSocket)
 	{
-		std::cout << "[S]Socket creation failed: " << WSAGetLastError() << std::endl;//TODO gla ?
-		return;
-	}
+		TextMessage* msg = clientSocket->TryReceive(0);
 
-	//Set async mode
-	unsigned long mode = 1;
-	ioctlsocket(serverSocket, FIONBIO, &mode);
+		clientSocket->Send(*msg);
 
-	//Bind
-	sockaddr_in addressInfo;
-	ZeroMemory(&addressInfo, sizeof(sockaddr_in));
-
-	addressInfo.sin_family = AF_INET;
-	addressInfo.sin_port = htons(42042);
-	addressInfo.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
-
-	auto bindResult = bind(serverSocket, reinterpret_cast<sockaddr*>(&addressInfo), sizeof(sockaddr));
-	if(0 != bindResult)
-	{
-		std::cout << "[S]Socket binding failed: " << WSAGetLastError() << std::endl;
-		return;
-	}
-
-	//Start listening
-	auto listenResult = listen(serverSocket, SOMAXCONN);
-	if (0 != listenResult)
-	{
-		std::cout << "[S]Socket listening failed: " << WSAGetLastError() << std::endl;
-		return;
-	}
-
-	//Connect
-	sockaddr_in clientAddressInfo;
-	int clientAddressInfoSize = sizeof(sockaddr_in);
-	
-	ZeroMemory(&clientAddressInfo, clientAddressInfoSize);
-
-	SOCKET clientConnectionSocket;
-	while (true)
-	{
-		clientConnectionSocket = accept(serverSocket, reinterpret_cast<sockaddr*>(&addressInfo), &clientAddressInfoSize);
-		if (INVALID_SOCKET == clientConnectionSocket)
-		{
-			if (WSAEWOULDBLOCK == GetLastError())
-			{
-				std::cout << "[S]Waiting for clients..." << std::endl;
-				Sleep(1000);
-				continue;
-			}
-			std::cout << "[S]Client connection failed: " << WSAGetLastError() << std::endl;
-			return;
-		}
-		
-		break;
-	}
-
-	//Receive
-	const int bufferSize = 14;
-	char buffer[bufferSize];
-
-	auto readBytes = recv(clientConnectionSocket, buffer, bufferSize, 0);
-	if (bufferSize != readBytes)
-	{
-		switch (readBytes)
-		{
-			case 0:
-			{
-				std::cout << "[S]Receiving error: client connection closed, " << WSAGetLastError() << std::endl;
-			}break;
+		delete msg;
 
 
-			case SOCKET_ERROR:
-			{
-				std::cout << "[S]Receiving error: " << WSAGetLastError() << std::endl;
-			}break;
+		Sleep(5000);
 
-
-			default:
-			{
-				std::cout << "[S]Receiving error: read " << readBytes << " bytes instead of " << bufferSize << std::endl;
-			}break;
-		}
+		delete clientSocket;
 	}
 	else
-	{
-		//Send
-		auto bytesSent = send(clientConnectionSocket, buffer, bufferSize, 0);
-		if (bufferSize != bytesSent)
-		{
-			if (SOCKET_ERROR == bytesSent)
-				std::cout << "[S]Sending error: " << WSAGetLastError() << std::endl;
-			else
-				std::cout << "[S]Sending error: sent " << bytesSent << " bytes instead of " << bufferSize << std::endl;
-		}
-	}
+		std::cout << "No clients!" << std::endl;
 	
-	//Close
-	shutdown(clientConnectionSocket, SD_BOTH);
-	closesocket(clientConnectionSocket);
 
-	closesocket(serverSocket);
+	//Receive
+	//const int bufferSize = 18;
+	//char buffer[bufferSize];
+	//
+	//auto readBytes = recv(clientConnectionSocket, buffer, bufferSize, 0);
+	//if (bufferSize != readBytes)
+	//{
+	//	switch (readBytes)
+	//	{
+	//		case 0:
+	//		{
+	//			std::cout << "[S]Receiving error: client connection closed, " << WSAGetLastError() << std::endl;
+	//		}break;
+	//
+	//
+	//		case SOCKET_ERROR:
+	//		{
+	//			std::cout << "[S]Receiving error: " << WSAGetLastError() << std::endl;
+	//		}break;
+	//
+	//
+	//		default:
+	//		{
+	//			std::cout << "[S]Receiving error: read " << readBytes << " bytes instead of " << bufferSize << std::endl;
+	//		}break;
+	//	}
+	//}
+	//else
+	//{
+	//	//Send
+	//	auto bytesSent = send(clientConnectionSocket, buffer, bufferSize, 0);
+	//	if (bufferSize != bytesSent)
+	//	{
+	//		if (SOCKET_ERROR == bytesSent)
+	//			std::cout << "[S]Sending error: " << WSAGetLastError() << std::endl;
+	//		else
+	//			std::cout << "[S]Sending error: sent " << bytesSent << " bytes instead of " << bufferSize << std::endl;
+	//	}
+	//}
+	//Sleep(10000);
+	////Close
+	//shutdown(clientConnectionSocket, SD_BOTH);
+	//closesocket(clientConnectionSocket);
 }
 
 
 void Client()
 {
-	//Create
+	Sleep(500);
+
 	ClientSocketTCP<TextMessage> s("127.0.0.1:42042");
 
-	
 	Sleep(2000);
 
-	////Read
-	//std::string request = "Hello, World!";
-	////std::cin >> request;
-	//
-	////Send
-	//auto bytesSent = send(clientSocket, request.c_str(), request.size() + 1, 0);
-	//if (request.size() + 1 != bytesSent)
-	//{
-	//	if (SOCKET_ERROR == bytesSent)
-	//		std::cout << "[C]Sending error: " << WSAGetLastError() << std::endl;
-	//	else
-	//		std::cout << "[C]Sending error: sent " << bytesSent << " bytes instead of " << request.size() + 1 << std::endl;
-	//}
-	//else
-	//{
-	//	//Receive
-	//	const int bufferSize = 14;
-	//	char buffer[bufferSize];
-	//
-	//	auto readBytes = recv(clientSocket, buffer, bufferSize, 0);
-	//	if (bufferSize != readBytes)
-	//	{
-	//		switch (readBytes)
-	//		{
-	//			case 0:
-	//			{
-	//				std::cout << "[C]Receiving error: client connection closed, " << WSAGetLastError() << std::endl;
-	//			}break;
-	//
-	//
-	//			case SOCKET_ERROR:
-	//			{
-	//				std::cout << "[C]Receiving error: " << WSAGetLastError() << std::endl;
-	//			}break;
-	//
-	//
-	//			default:
-	//			{
-	//				std::cout << "[C]Receiving error: read " << readBytes << " bytes instead of " << bufferSize << std::endl;
-	//			}break;
-	//		}
-	//	}
-	//
-	//	//Show
-	//	std::string answer(buffer);
-	//	std::cout << answer << std::endl;
-	//}	
+	TextMessage request("1234");
+	s.Send(request);
+
+	Sleep(1000);
+
+	TextMessage* answer = s.TryReceive(0);
+	std::cout << answer->Text() << std::endl;
 }
 
 
@@ -188,13 +106,13 @@ void Task1::Do()
 		return;
 	}
 
-	//std::thread server(Server);
+	std::thread server(Server);
 
 
 	Client();
 
 
-	//server.join();
+	server.join();
 
 	WSACleanup();
 
