@@ -14,19 +14,17 @@ void Server()
 {
 	ServerSocketTCP<TextMessage> serverSocket("127.0.0.1:42042");
 
-	ClientSocketTCP<TextMessage>* clientSocket = serverSocket.TryAcceptIncomingConnection(1000);
+	ClientSocketTCP<TextMessage> clientSocket = serverSocket.TryAcceptIncomingConnection(1000);
 	if (nullptr != clientSocket)
 	{
-		TextMessage* msg = clientSocket->TryReceive(0);
-
-		clientSocket->Send(*msg);
-
+		TextMessage* msg = clientSocket.TryReceive(0);
+		
+		clientSocket.Send(*msg);
+		
 		delete msg;
-
-
+		
+		
 		Sleep(5000);
-
-		delete clientSocket;
 	}
 	else
 		std::cout << "No clients!" << std::endl;
@@ -105,16 +103,17 @@ void Task1::Do()
 		std::cout << "WinSock failed to init: " << startupResult << std::endl;
 		return;
 	}
-
+	
 	std::thread server(Server);
-
-
+	
+	
 	Client();
-
-
+	
+	
 	server.join();
-
+	
 	WSACleanup();
+
 
 	std::cout << "Here TTT will be one day" << std::endl;
 }

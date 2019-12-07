@@ -38,35 +38,53 @@ private:
 	std::string _text;
 };
 
+class SocketDeleter
+	{
+	public:
+		void operator()(SOCKET* s)
+		{
+			std::cout << "deleting S " << s;
+			if (nullptr != s)
+			{
+				std::cout << ", " << *s << std::endl;
+				closesocket(*s);
+
+				delete s;
+			}
+		}
+	};
 
 
 template<typename TMessage>
 class ServerSocketTCP;
 
-
 template<typename TMessage>
 class ClientSocketTCP
 {
-private:
-	ClientSocketTCP(SOCKET socket) :
-		_socket(new SOCKET)
+	ClientSocketTCP(SOCKET socket)
 	{
-		*_socket = socket;
+		if (INVALID_SOCKET != socket)
+			_socketPtr.reset(new SOCKET(socket));
 	}
 
-	ClientSocketTCP(ClientSocketTCP& other) = delete;//TODO wupwupwupwupwupwup
+
+	ClientSocketTCP(ClientSocketTCP& other) = delete;
 	void operator=(ClientSocketTCP& other) = delete;
 
 public:
 	//Address should be formatted as "IP1.IP2.IP3.IP4:PORT"
 	explicit ClientSocketTCP(std::string address) :
-		_socket(new SOCKET)
+		_socketPtr(nullptr)
 	{
-		//TODO validate {address}?
-		//TODO handle errors
-		//Create
-		*_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+		//TODO maybe validate {address}?
 		
+		//Create
+		SOCKET newSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+		
+		if (INVALID_SOCKET == newSocket)
+			return;
+
+
 		//Connect
 		sockaddr_in addressInfo;
 		ZeroMemory(&addressInfo, sizeof(sockaddr_in));
@@ -75,28 +93,27 @@ public:
 		addressInfo.sin_port = htons(atoi(address.substr(address.find(":") + 1, std::string::npos).c_str()));
 		addressInfo.sin_addr.S_un.S_addr = inet_addr(address.substr(0, address.find(":")).c_str());
 
-		if (0 != connect(*_socket, reinterpret_cast<sockaddr*>(&addressInfo), sizeof(sockaddr)))
-			std::cout << "[C]Socket connection failed: " << WSAGetLastError() << std::endl;
+
+		if (0 != connect(newSocket, reinterpret_cast<sockaddr*>(&addressInfo), sizeof(sockaddr)))
+		{
+			closesocket(newSocket);
+			return;
+		}
+
+
+		_socketPtr.reset(new SOCKET(newSocket));
 	}
 
-	ClientSocketTCP(ClientSocketTCP&& other) :
-		_socket(new SOCKET)
+	ClientSocketTCP(ClientSocketTCP&& other) noexcept
 	{
-		*_socket = *(other._socket);
-
-		other._socket = nullptr;
+		//TODO check
+		_socketPtr = other._socketPtr;
 	}
 
 
 	~ClientSocketTCP()
 	{
-		if (nullptr != _socket)
-		{
-			shutdown(*_socket, SD_BOTH);
-			closesocket(*_socket);
-
-			delete _socket;
-		}
+		shutdown(*_socketPtr, SD_BOTH);
 	}
 
 
@@ -122,7 +139,7 @@ public:
 		int bytesSent = 0;
 		while (bytesToSend > 0)
 		{
-			int thisTimeBytesSent = send(*_socket, bufferToSend + bytesSent, bytesToSend, 0);
+			int thisTimeBytesSent = send(*_socketPtr, bufferToSend + bytesSent, bytesToSend, 0);
 
 			bytesSent += thisTimeBytesSent;
 			bytesToSend -= thisTimeBytesSent;
@@ -142,7 +159,7 @@ public:
 		int bytesReceived = 0;
 		do
 		{
-			int thisTimeBytesReceived = recv(*_socket, lengthBuffer + bytesReceived, lengthBufferSize - bytesReceived, 0);
+			int thisTimeBytesReceived = recv(*_socketPtr, lengthBuffer + bytesReceived, lengthBufferSize - bytesReceived, 0);
 			
 			bytesReceived += thisTimeBytesReceived;
 		}
@@ -160,7 +177,7 @@ public:
 		bytesReceived = 0;
 		do
 		{
-			int thisTimeBytesReceived = recv(*_socket, messageBuffer + bytesReceived, messageLength - bytesReceived, 0);
+			int thisTimeBytesReceived = recv(*_socketPtr, messageBuffer + bytesReceived, messageLength - bytesReceived, 0);
 
 			bytesReceived += thisTimeBytesReceived;
 		}
@@ -175,10 +192,22 @@ public:
 	}
 
 
-	friend ClientSocketTCP<TMessage>* ServerSocketTCP<TMessage>::TryAcceptIncomingConnection(int timeout);
+
+	friend bool operator==(const std::nullptr_t&, const ClientSocketTCP& socket)
+	{
+		return socket._socketPtr == nullptr;
+	}
+
+	friend bool operator!=(const std::nullptr_t&, const ClientSocketTCP& socket)
+	{
+		return socket._socketPtr != nullptr;
+	}
+
+
+	friend ClientSocketTCP<TMessage> ServerSocketTCP<TMessage>::TryAcceptIncomingConnection(int timeout);
 
 private:
-	SOCKET* _socket;
+	std::unique_ptr<SOCKET, SocketDeleter> _socketPtr;
 };
 
 
@@ -187,13 +216,16 @@ class ServerSocketTCP
 {
 public:
 	//Address should be formatted as "IP1.IP2.IP3.IP4:PORT"
-	explicit ServerSocketTCP(std::string address) :
-		_socket(new SOCKET)
+	explicit ServerSocketTCP(std::string address)
 	{
 		//TODO validate {address}?
-		//TODO handle errors
+		
 		//Create
-		*_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+		SOCKET newSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+		if (INVALID_SOCKET == newSocket)
+			return;
+
 
 		//Bind
 		sockaddr_in addressInfo;
@@ -203,30 +235,42 @@ public:
 		addressInfo.sin_port = htons(atoi(address.substr(address.find(":") + 1, std::string::npos).c_str()));
 		addressInfo.sin_addr.S_un.S_addr = inet_addr(address.substr(0, address.find(":")).c_str());
 
-		auto bindResult = bind(*_socket, reinterpret_cast<sockaddr*>(&addressInfo), sizeof(sockaddr));
 
+		if (0 != bind(newSocket, reinterpret_cast<sockaddr*>(&addressInfo), sizeof(sockaddr)))
+		{
+			closesocket(newSocket);
+			return;
+		}
+
+		
 		//Set non-blocking mode
 		u_long mode = 1;
-		ioctlsocket(*_socket, FIONBIO, &mode);
+		ioctlsocket(newSocket, FIONBIO, &mode);
+
 
 		//Start listening
-		auto listenResult = listen(*_socket, SOMAXCONN);
-		//if (0 != listenResult)
-		//{
-		//	std::cout << "[S]Socket listening failed: " << WSAGetLastError() << std::endl;
-		//	return;
-		//}
+		if (0 != listen(newSocket, SOMAXCONN))
+		{
+			closesocket(newSocket);
+			return;
+		}
+
+
+		_socketPtr.reset(new SOCKET(newSocket));
 	}
 
 	~ServerSocketTCP()
 	{
-		closesocket(*_socket);
+		//Set blocking mode
+		u_long mode = 0;
+		ioctlsocket(*_socketPtr, FIONBIO, &mode);
 
-		delete _socket;
+		
+		shutdown(*_socketPtr, SD_BOTH);
 	}
 
 
-	ClientSocketTCP<TMessage>* TryAcceptIncomingConnection(int timeout)
+	ClientSocketTCP<TMessage> TryAcceptIncomingConnection(int timeout)
 	{
 		//Client info
 		sockaddr_in clientAddressInfo;
@@ -234,21 +278,56 @@ public:
 
 		ZeroMemory(&clientAddressInfo, clientAddressInfoSize);
 
-		//Try
-		SOCKET clientConnectionSocket = accept(*_socket, reinterpret_cast<sockaddr*>(&clientAddressInfo), &clientAddressInfoSize);
-		
-		if (INVALID_SOCKET == clientConnectionSocket && WSAEWOULDBLOCK == GetLastError())
-			Sleep(timeout);
+		//Try to accept
+		SOCKET clientConnectionSocket = accept(*_socketPtr, reinterpret_cast<sockaddr*>(&clientAddressInfo), &clientAddressInfoSize);
 
-		//Try again
-		clientConnectionSocket = accept(*_socket, reinterpret_cast<sockaddr*>(&clientAddressInfo), &clientAddressInfoSize);
+		//If succeed
+		if (INVALID_SOCKET != clientConnectionSocket)
+		{
+			return ClientSocketTCP<TMessage>(clientConnectionSocket);
+		}
 
-		if (INVALID_SOCKET == clientConnectionSocket)
-			return nullptr;
+		//If failed & not cause of pending operation
+		if(WSAEWOULDBLOCK != GetLastError())
+		{
+			shutdown(*_socketPtr, SD_BOTH);
+			_socketPtr.reset(nullptr);
 
-		return new ClientSocketTCP<TMessage>(clientConnectionSocket);
+			return ClientSocketTCP<TMessage>(INVALID_SOCKET);
+		}
+
+		//Now waiting for incoming connections
+		timeval time;
+		time.tv_sec = 0;
+		time.tv_usec = timeout * 1000;//timeout is ms, so to get us we multiply by 1000
+
+		fd_set set;
+		FD_ZERO(&set);
+		FD_SET(*_socketPtr, &set);
+
+		int readySocketsCount = select(9001, &set, nullptr, nullptr, &time);//First param is ignored
+
+		//If error occured
+		if(SOCKET_ERROR == readySocketsCount)
+		{
+			shutdown(*_socketPtr, SD_BOTH);
+			_socketPtr.reset(nullptr);
+
+			return ClientSocketTCP<TMessage>(INVALID_SOCKET);
+		}
+
+		//If socket is not ready
+		if (0 == readySocketsCount)
+		{
+			return ClientSocketTCP<TMessage>(INVALID_SOCKET);
+		}
+
+		//Now connection is possible
+		clientConnectionSocket = accept(*_socketPtr, reinterpret_cast<sockaddr*>(&clientAddressInfo), &clientAddressInfoSize);
+
+		return ClientSocketTCP<TMessage>(clientConnectionSocket);
 	}
 
 private:
-	SOCKET* _socket;
+	std::unique_ptr<SOCKET, SocketDeleter> _socketPtr;
 };
