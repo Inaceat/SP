@@ -72,6 +72,8 @@ class ClientSocketTCP
 	void operator=(ClientSocketTCP& other) = delete;
 
 public:
+	ClientSocketTCP() = default;
+
 	//Address should be formatted as "IP1.IP2.IP3.IP4:PORT"
 	explicit ClientSocketTCP(std::string address) :
 		_socketPtr(nullptr)
@@ -106,14 +108,18 @@ public:
 
 	ClientSocketTCP(ClientSocketTCP&& other) noexcept
 	{
-		//TODO check
 		_socketPtr = other._socketPtr;
 	}
 
+	void operator=(ClientSocketTCP&& other) noexcept
+	{
+		_socketPtr = std::move(other._socketPtr);
+	}
 
 	~ClientSocketTCP()
 	{
-		shutdown(*_socketPtr, SD_BOTH);
+		if (nullptr != _socketPtr)
+			shutdown(*_socketPtr, SD_BOTH);
 	}
 
 
@@ -150,41 +156,78 @@ public:
 
 	TMessage* TryReceive(int timeout)
 	{
+		//Prepare for waiting
+		timeval time;
+		time.tv_sec = timeout / 1000;			//seconds
+		time.tv_usec = (timeout % 1000) * 1000;	//microseconds, timeout is 'ms', so to get 'us' we multiply by 1000
+
+		fd_set set;
+		FD_ZERO(&set);
+		FD_SET(*_socketPtr, &set);
+
+
 		//Get message length
 		int messageLength;
 
 		int lengthBufferSize = sizeof(messageLength);
 		char* lengthBuffer = new char[lengthBufferSize];
 
-		int bytesReceived = 0;
-		do
-		{
-			int thisTimeBytesReceived = recv(*_socketPtr, lengthBuffer + bytesReceived, lengthBufferSize - bytesReceived, 0);
-			
-			bytesReceived += thisTimeBytesReceived;
-		}
-		while (bytesReceived < lengthBufferSize);
-		
 
+		//Wait till data available
+		int readySocketsCount = select(9001, &set, nullptr, nullptr, &time);//First param is ignored
+
+		//If error occured, PANIC
+		if(SOCKET_ERROR == readySocketsCount)
+		{
+			shutdown(*_socketPtr, SD_BOTH);
+			_socketPtr.reset(nullptr);
+
+			delete[] lengthBuffer;
+			return nullptr;
+		}
+
+		//If socket has no data after timeout, return nothing
+		if (0 == readySocketsCount)
+		{
+			delete[] lengthBuffer;
+			return nullptr;
+		}
+
+
+		//Now there is some data, peek it
+		int bytesReceived = recv(*_socketPtr, lengthBuffer, lengthBufferSize, MSG_PEEK);
+
+		//If length was not read fully, return, leaving data in buffer
+		if (bytesReceived != lengthBufferSize)
+		{
+			delete[] lengthBuffer;
+			return nullptr;
+		}
+
+		//Now get length from buffer
 		memcpy_s(&messageLength, sizeof(messageLength), lengthBuffer, lengthBufferSize);
 
 		delete[] lengthBuffer;
 
 
-		//Get message
-		char* messageBuffer = new char[messageLength];
+		
+		//Get message length and message itself
+		char* messageBuffer = new char[messageLength + sizeof(messageLength)];
 
-		bytesReceived = 0;
-		do
+		//We've already read 'messageLength', so we have data to read, at least 'messageLength' itself
+		bytesReceived = recv(*_socketPtr, messageBuffer, messageLength + sizeof(messageLength), MSG_PEEK);
+
+		if (bytesReceived != (messageLength + sizeof(messageLength)))
 		{
-			int thisTimeBytesReceived = recv(*_socketPtr, messageBuffer + bytesReceived, messageLength - bytesReceived, 0);
-
-			bytesReceived += thisTimeBytesReceived;
+			delete[] messageBuffer;
+			return nullptr;
 		}
-		while (bytesReceived < messageLength);
+
+		//Now buffer has all data we need, so now we read it
+		recv(*_socketPtr, messageBuffer, messageLength + sizeof(messageLength), 0);
 
 
-		TMessage* result = new TMessage(messageBuffer, messageLength);
+		TMessage* result = new TMessage(messageBuffer + sizeof(messageLength), messageLength);
 
 		delete[] messageBuffer;
 
@@ -218,7 +261,7 @@ public:
 	//Address should be formatted as "IP1.IP2.IP3.IP4:PORT"
 	explicit ServerSocketTCP(std::string address)
 	{
-		//TODO validate {address}?
+		//TODO maybe validate {address}?
 		
 		//Create
 		SOCKET newSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -298,8 +341,8 @@ public:
 
 		//Now waiting for incoming connections
 		timeval time;
-		time.tv_sec = 0;
-		time.tv_usec = timeout * 1000;//timeout is ms, so to get us we multiply by 1000
+		time.tv_sec = timeout / 1000;			//seconds
+		time.tv_usec = (timeout % 1000) * 1000;	//microseconds, timeout is ms, so to get us we multiply by 1000
 
 		fd_set set;
 		FD_ZERO(&set);

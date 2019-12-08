@@ -14,83 +14,70 @@ void Server()
 {
 	ServerSocketTCP<TextMessage> serverSocket("127.0.0.1:42042");
 
-	ClientSocketTCP<TextMessage> clientSocket = serverSocket.TryAcceptIncomingConnection(1000);
-	if (nullptr != clientSocket)
-	{
-		TextMessage* msg = clientSocket.TryReceive(0);
-		
-		clientSocket.Send(*msg);
-		
-		delete msg;
-		
-		
-		Sleep(5000);
-	}
-	else
-		std::cout << "No clients!" << std::endl;
-	
+	ClientSocketTCP<TextMessage> clientSocket;
 
-	//Receive
-	//const int bufferSize = 18;
-	//char buffer[bufferSize];
-	//
-	//auto readBytes = recv(clientConnectionSocket, buffer, bufferSize, 0);
-	//if (bufferSize != readBytes)
-	//{
-	//	switch (readBytes)
-	//	{
-	//		case 0:
-	//		{
-	//			std::cout << "[S]Receiving error: client connection closed, " << WSAGetLastError() << std::endl;
-	//		}break;
-	//
-	//
-	//		case SOCKET_ERROR:
-	//		{
-	//			std::cout << "[S]Receiving error: " << WSAGetLastError() << std::endl;
-	//		}break;
-	//
-	//
-	//		default:
-	//		{
-	//			std::cout << "[S]Receiving error: read " << readBytes << " bytes instead of " << bufferSize << std::endl;
-	//		}break;
-	//	}
-	//}
-	//else
-	//{
-	//	//Send
-	//	auto bytesSent = send(clientConnectionSocket, buffer, bufferSize, 0);
-	//	if (bufferSize != bytesSent)
-	//	{
-	//		if (SOCKET_ERROR == bytesSent)
-	//			std::cout << "[S]Sending error: " << WSAGetLastError() << std::endl;
-	//		else
-	//			std::cout << "[S]Sending error: sent " << bytesSent << " bytes instead of " << bufferSize << std::endl;
-	//	}
-	//}
-	//Sleep(10000);
-	////Close
-	//shutdown(clientConnectionSocket, SD_BOTH);
-	//closesocket(clientConnectionSocket);
+	while (true)
+	{
+		clientSocket = serverSocket.TryAcceptIncomingConnection(100);
+
+		if (nullptr != clientSocket)
+			break;
+	}
+
+	std::cout << "[S]connected" << std::endl;
+
+	while (true)
+	{
+		TextMessage* msg = clientSocket.TryReceive(100);
+
+		if (nullptr != msg)
+		{
+			std::cout << "[S]received " << msg->Text() << std::endl;
+
+			clientSocket.Send(*msg);
+	
+			delete msg;
+			
+			Sleep(5000);
+
+			break;
+		}
+	}
 }
 
 
 void Client()
 {
-	Sleep(500);
+	Sleep(2000);
 
 	ClientSocketTCP<TextMessage> s("127.0.0.1:42042");
 
-	Sleep(2000);
 
 	TextMessage request("1234");
+
+	Sleep(2000);
+
 	s.Send(request);
 
-	Sleep(1000);
 
-	TextMessage* answer = s.TryReceive(0);
-	std::cout << answer->Text() << std::endl;
+	while (true)
+	{
+		TextMessage* answer = s.TryReceive(100);
+
+		if (nullptr != answer)
+		{
+			std::cout << answer->Text() << std::endl;
+	
+			delete answer;
+
+			break;
+		}
+	}
+	
+
+
+
+	
 }
 
 
