@@ -2,7 +2,7 @@
 
 
 #include <WinSock2.h>
-
+#include <WS2tcpip.h>
 
 class TextMessage
 {
@@ -93,7 +93,8 @@ public:
 
 		addressInfo.sin_family = AF_INET;
 		addressInfo.sin_port = htons(atoi(address.substr(address.find(":") + 1, std::string::npos).c_str()));
-		addressInfo.sin_addr.S_un.S_addr = inet_addr(address.substr(0, address.find(":")).c_str());
+		inet_pton(AF_INET, address.substr(0, address.find(":")).c_str(), &(addressInfo.sin_addr));
+		
 
 
 		if (0 != connect(newSocket, reinterpret_cast<sockaddr*>(&addressInfo), sizeof(sockaddr)))
@@ -146,6 +147,15 @@ public:
 		while (bytesToSend > 0)
 		{
 			int thisTimeBytesSent = send(*_socketPtr, bufferToSend + bytesSent, bytesToSend, 0);
+
+			if (SOCKET_ERROR == thisTimeBytesSent)
+			{
+				shutdown(*_socketPtr, SD_BOTH);
+				_socketPtr.reset(nullptr);
+
+				delete[] bufferToSend;
+				return;
+			}
 
 			bytesSent += thisTimeBytesSent;
 			bytesToSend -= thisTimeBytesSent;
@@ -276,7 +286,7 @@ public:
 
 		addressInfo.sin_family = AF_INET;
 		addressInfo.sin_port = htons(atoi(address.substr(address.find(":") + 1, std::string::npos).c_str()));
-		addressInfo.sin_addr.S_un.S_addr = inet_addr(address.substr(0, address.find(":")).c_str());
+		inet_pton(AF_INET, address.substr(0, address.find(":")).c_str(), &(addressInfo.sin_addr));
 
 
 		if (0 != bind(newSocket, reinterpret_cast<sockaddr*>(&addressInfo), sizeof(sockaddr)))
@@ -321,25 +331,8 @@ public:
 
 		ZeroMemory(&clientAddressInfo, clientAddressInfoSize);
 
-		//Try to accept
-		SOCKET clientConnectionSocket = accept(*_socketPtr, reinterpret_cast<sockaddr*>(&clientAddressInfo), &clientAddressInfoSize);
 
-		//If succeed
-		if (INVALID_SOCKET != clientConnectionSocket)
-		{
-			return ClientSocketTCP<TMessage>(clientConnectionSocket);
-		}
-
-		//If failed & not cause of pending operation
-		if(WSAEWOULDBLOCK != GetLastError())
-		{
-			shutdown(*_socketPtr, SD_BOTH);
-			_socketPtr.reset(nullptr);
-
-			return ClientSocketTCP<TMessage>(INVALID_SOCKET);
-		}
-
-		//Now waiting for incoming connections
+		//Waiting for incoming connections
 		timeval time;
 		time.tv_sec = timeout / 1000;			//seconds
 		time.tv_usec = (timeout % 1000) * 1000;	//microseconds, timeout is ms, so to get us we multiply by 1000
@@ -350,7 +343,7 @@ public:
 
 		int readySocketsCount = select(9001, &set, nullptr, nullptr, &time);//First param is ignored
 
-		//If error occured
+		//If error occured, PANIC! 
 		if(SOCKET_ERROR == readySocketsCount)
 		{
 			shutdown(*_socketPtr, SD_BOTH);
@@ -359,15 +352,24 @@ public:
 			return ClientSocketTCP<TMessage>(INVALID_SOCKET);
 		}
 
-		//If socket is not ready
+		//If socket is not ready, return smth kinda null
 		if (0 == readySocketsCount)
 		{
 			return ClientSocketTCP<TMessage>(INVALID_SOCKET);
 		}
 
-		//Now connection is possible
-		clientConnectionSocket = accept(*_socketPtr, reinterpret_cast<sockaddr*>(&clientAddressInfo), &clientAddressInfoSize);
 
+		//Now connection is possible
+		SOCKET clientConnectionSocket = accept(*_socketPtr, reinterpret_cast<sockaddr*>(&clientAddressInfo), &clientAddressInfoSize);
+
+		//If error occured
+		if (INVALID_SOCKET == clientConnectionSocket)
+		{
+			return ClientSocketTCP<TMessage>(INVALID_SOCKET);
+		}
+
+
+		//Now all's good
 		return ClientSocketTCP<TMessage>(clientConnectionSocket);
 	}
 
