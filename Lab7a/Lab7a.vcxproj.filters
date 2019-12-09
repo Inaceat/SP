@@ -35,7 +35,10 @@
     <ClInclude Include="src\Tasks.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\SocketConnection.hpp">
+    <ClInclude Include="src\SocketsTCP.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SocketsUDP.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

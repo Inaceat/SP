@@ -27,7 +27,8 @@
     <ClCompile Include="src\Task1.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\SocketConnection.hpp" />
+    <ClInclude Include="src\SocketsTCP.hpp" />
+    <ClInclude Include="src\SocketsUDP.hpp" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\targetver.h" />
     <ClInclude Include="src\Tasks.hpp" />
