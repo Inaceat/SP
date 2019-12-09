@@ -43,7 +43,7 @@ class SocketDeleter
 	public:
 		void operator()(SOCKET* s)
 		{
-			std::cout << "deleting S " << s;
+			std::cout << "deleting S " << s;//TODO remove this
 			if (nullptr != s)
 			{
 				std::cout << ", " << *s << std::endl;

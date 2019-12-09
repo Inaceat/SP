@@ -5,9 +5,57 @@
 
 
 #include "SocketsTCP.hpp"
+#include "SocketsUDP.hpp"
 
 
-void Server()
+void ServerUDP()
+{
+	BroadcastReceiverSocketUDP<TextMessage> serverSocket("42042");
+
+	sockaddr_in sender;
+
+	while (true)
+	{
+		TextMessage* result = serverSocket.TryReceive(100, sender);
+
+		if (nullptr != result)
+		{
+			int bufsize = 100;
+			char* buf = new char[bufsize];
+
+			inet_ntop(AF_INET, &(sender.sin_addr), buf, bufsize);
+
+			std::cout << "Received " << result->Text() << " from " << std::string(buf) << std::endl;
+
+			delete result;
+			delete[] buf;
+			
+			break;
+		}
+		else
+			std::cout << " Not received" << std::endl;
+	}
+
+	Sleep(5000);
+}
+
+void ClientUDP()
+{
+	Sleep(2000);
+
+	BroadcasSendertSocketUDP<TextMessage> s("10.164.145.255:42042");
+
+
+	TextMessage request("1234");
+
+	s.Send(request);
+
+	Sleep(4000);
+}
+
+
+
+void ServerTCP()
 {
 	ServerSocketTCP<TextMessage> serverSocket("127.0.0.1:42042");
 
@@ -42,8 +90,7 @@ void Server()
 	}
 }
 
-
-void Client()
+void ClientTCP()
 {
 	Sleep(2000);
 
@@ -88,10 +135,10 @@ void Task1::Do()
 		return;
 	}
 	
-	std::thread server(Server);
+	std::thread server(ServerUDP);
 	
 	
-	Client();
+	ClientUDP();
 	
 	
 	server.join();
