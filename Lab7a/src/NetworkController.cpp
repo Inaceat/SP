@@ -23,14 +23,14 @@ namespace TTT
 	{
 	}
 
-	bool NetworkController::TryFindServer(int timeout)
+	bool NetworkController::TryFindServerAs(std::string userName, int timeout)
 	{
 		ServerSocketTCP<NetworkMessage> connectionCreator("127.0.0.1:42042");
 
 		BroadcastSenderSocketUDP<NetworkMessage> registrationSender("127.0.0.255:42042"); //TODO do smth with it
 
 
-		NetworkMessage registrationMessage(NetworkMessage::Type::ClientConnectionAsk, "Hello");
+		NetworkMessage registrationMessage(NetworkMessage::Type::ClientConnectionAsk, userName);
 
 		registrationSender.Send(registrationMessage);
 

@@ -13,7 +13,13 @@ namespace TTT
 		Client() :
 			_localServer(nullptr)
 		{
-			
+			_userName = "TempName";
+		}
+
+		~Client()
+		{
+			if (nullptr !=_localServer)
+				delete _localServer;
 		}
 
 
@@ -22,7 +28,7 @@ namespace TTT
 			//Try find server
 			int serverFindTimeout = 1000;
 
-			bool serverFound = _netController.TryFindServer(serverFindTimeout);
+			bool serverFound = _netController.TryFindServerAs(_userName, serverFindTimeout);
 
 			if (!serverFound)
 			{
@@ -31,7 +37,7 @@ namespace TTT
 				_localServer->Start();
 
 				//Connect to local server
-				serverFound = _netController.TryFindServer(serverFindTimeout);
+				serverFound = _netController.TryFindServerAs(_userName, serverFindTimeout);
 
 				//If connected to local, TODO
 				if (serverFound)
@@ -53,7 +59,8 @@ namespace TTT
 
 	private:
 		NetworkController _netController;
-
 		Server* _localServer;
+
+		std::string _userName;
 	};
 }

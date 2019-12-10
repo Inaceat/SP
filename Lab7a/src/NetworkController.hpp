@@ -21,7 +21,7 @@ namespace TTT
 		void Start();
 
 
-		bool TryFindServer(int timeout);
+		bool TryFindServerAs(std::string userName, int timeout);
 
 
 		void Send(NetworkMessage message);
