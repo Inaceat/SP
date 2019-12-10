@@ -74,5 +74,11 @@
     <ClInclude Include="src\Server.hpp">
       <Filter>TTT\Server</Filter>
     </ClInclude>
+    <ClInclude Include="src\NetworkController.hpp">
+      <Filter>TTT\Client\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GUIController.hpp">
+      <Filter>TTT\Client\GUI</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

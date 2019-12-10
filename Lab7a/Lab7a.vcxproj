@@ -30,6 +30,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Client.hpp" />
+    <ClInclude Include="src\GUIController.hpp" />
+    <ClInclude Include="src\NetworkController.hpp" />
     <ClInclude Include="src\NetworkMessage.hpp" />
     <ClInclude Include="src\Server.hpp" />
     <ClInclude Include="src\SocketsTCP.hpp" />
