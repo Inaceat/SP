@@ -80,5 +80,8 @@
     <ClInclude Include="src\GUIController.hpp">
       <Filter>TTT\Client\GUI</Filter>
     </ClInclude>
+    <ClInclude Include="src\SocketsUtils.hpp">
+      <Filter>TTT\Client\Network\Sockets</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
