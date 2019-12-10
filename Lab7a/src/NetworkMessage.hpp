@@ -20,18 +20,18 @@ namespace TTT
 
 
 	public:
-		NetworkMessage(TTT::NetworkMessage::Type type, std::string data) :
+		NetworkMessage(Type type, std::string data) :
 			_type(type),
 			_data(data)
 		{}
 
 
-		Type Type() const
+		Type GetType() const
 		{
 			return _type;
 		}
 
-		std::string Data() const
+		std::string GetData() const
 		{
 			return _data;
 		}
