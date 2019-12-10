@@ -4,6 +4,7 @@
 #include "NetworkController.hpp"
 #include "Server.hpp"
 #include "GUIController.hpp"
+#include "UserCommand.hpp"
 
 
 namespace TTT
@@ -77,9 +78,11 @@ namespace TTT
 				{
 					switch (command->GetType())
 					{
-						case UserCommand::Type::Exit:
+						case UserCommand::Type::GameActionDone: 
 							break;
 
+						case UserCommand::Type::Exit:
+							break;
 
 						default:
 							break;
