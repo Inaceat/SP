@@ -31,6 +31,12 @@
     <Filter Include="TTT\Client\Network\Sockets">
       <UniqueIdentifier>{3156931b-dc9f-42ab-b958-deaee2093839}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TTT\Client\GUI\Input">
+      <UniqueIdentifier>{b84746ad-3ce8-4ff0-8336-6d6b064387f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TTT\Client\GUI\MessagePipe">
+      <UniqueIdentifier>{2df91a47-90a5-4227-8aab-ba677d04483f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -53,6 +59,12 @@
     </ClCompile>
     <ClCompile Include="src\TicTackToeGame.cpp">
       <Filter>TTT</Filter>
+    </ClCompile>
+    <ClCompile Include="src\InputController.cpp">
+      <Filter>TTT\Client\GUI\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="src\InputMessage.cpp">
+      <Filter>TTT\Client\GUI\Input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -94,6 +106,21 @@
     </ClInclude>
     <ClInclude Include="src\TicTackToeGame.hpp">
       <Filter>TTT</Filter>
+    </ClInclude>
+    <ClInclude Include="src\InputController.hpp">
+      <Filter>TTT\Client\GUI\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="src\InputMessage.hpp">
+      <Filter>TTT\Client\GUI\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MessagePipe.hpp">
+      <Filter>TTT\Client\GUI\MessagePipe</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MessagePipeInput.hpp">
+      <Filter>TTT\Client\GUI\MessagePipe</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MessagePipeOutput.hpp">
+      <Filter>TTT\Client\GUI\MessagePipe</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

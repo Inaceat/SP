@@ -73,7 +73,8 @@ namespace TTT
 			
 			const int mainTimeout = 100;
 
-			while (true)
+			bool shouldWork = true;
+			while (shouldWork)
 			{
 				//Try get user command from gui
 				UserCommand* command = _guiController.TryGetUserCommand(mainTimeout);
@@ -83,16 +84,24 @@ namespace TTT
 					{
 						case UserCommand::Type::FindGame:
 							//Show "searching" message
+							_guiController.DisableInput();
 							//Send request to server
+							std::cout << "find" << std::endl;
+
+							_guiController.ShowGameField(_gameState);
+
 							break;
 
 						case UserCommand::Type::DoGameAction:
 							//Send request to server
+							std::cout << "do " + command->GetData() << std::endl;
 							break;
 
 						case UserCommand::Type::Exit:
 							//Send deregistration message to server
-							//??? TODO
+							shouldWork = false;
+
+							std::cout << "exit" << std::endl;
 							break;
 
 

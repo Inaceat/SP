@@ -20,6 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Client.cpp" />
+    <ClCompile Include="src\InputController.cpp" />
+    <ClCompile Include="src\InputMessage.cpp" />
     <ClCompile Include="src\NetworkController.cpp" />
     <ClCompile Include="src\Server.cpp" />
     <ClCompile Include="src\stdafx.cpp">
@@ -33,6 +35,11 @@
   <ItemGroup>
     <ClInclude Include="src\Client.hpp" />
     <ClInclude Include="src\GUIController.hpp" />
+    <ClInclude Include="src\InputController.hpp" />
+    <ClInclude Include="src\InputMessage.hpp" />
+    <ClInclude Include="src\MessagePipe.hpp" />
+    <ClInclude Include="src\MessagePipeInput.hpp" />
+    <ClInclude Include="src\MessagePipeOutput.hpp" />
     <ClInclude Include="src\TicTackToeGame.hpp" />
     <ClInclude Include="src\UserCommand.hpp" />
     <ClInclude Include="src\NetworkController.hpp" />
