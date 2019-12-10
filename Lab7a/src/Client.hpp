@@ -5,6 +5,7 @@
 #include "Server.hpp"
 #include "GUIController.hpp"
 #include "UserCommand.hpp"
+#include "TicTackToeGame.hpp"
 
 
 namespace TTT
@@ -67,7 +68,9 @@ namespace TTT
 			}
 
 
-			//Now we are connected to server, so start Main Cycle
+			//Now we are connected to server, so show menu and start Main Cycle
+			_guiController.ShowMenu();
+			
 			const int mainTimeout = 100;
 
 			while (true)
@@ -78,15 +81,26 @@ namespace TTT
 				{
 					switch (command->GetType())
 					{
-						case UserCommand::Type::GameActionDone: 
+						case UserCommand::Type::FindGame:
+							//Show "searching" message
+							//Send request to server
+							break;
+
+						case UserCommand::Type::DoGameAction:
+							//Send request to server
 							break;
 
 						case UserCommand::Type::Exit:
+							//Send deregistration message to server
+							//??? TODO
 							break;
+
 
 						default:
 							break;
 					}
+
+					delete command;
 				}
 
 				//Try get message from network
@@ -97,15 +111,19 @@ namespace TTT
 					switch (message->GetType())
 					{
 						case NetworkMessage::Type::ServerMMResult:
+							//Show search result
 							break;
 
 						case NetworkMessage::Type::ServerGameState:
+							//Update game state & view
 							break;
 
 
 						default: 
 							break;
 					}
+
+					delete message;
 				}
 			}
 		}
@@ -117,5 +135,8 @@ namespace TTT
 		Server* _localServer;
 
 		std::string _userName;
+
+		TicTackToeGame _gameState;
+
 	};
 }

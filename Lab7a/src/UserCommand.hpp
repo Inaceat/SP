@@ -8,7 +8,8 @@ namespace TTT
 	public:
 		enum class Type
 		{
-			GameActionDone,
+			FindGame,
+			DoGameAction,
 			Exit
 		};
 
