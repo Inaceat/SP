@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Client.cpp" />
+    <ClCompile Include="src\Server.cpp" />
     <ClCompile Include="src\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -27,6 +29,9 @@
     <ClCompile Include="src\Task1.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Client.hpp" />
+    <ClInclude Include="src\NetworkMessage.hpp" />
+    <ClInclude Include="src\Server.hpp" />
     <ClInclude Include="src\SocketsTCP.hpp" />
     <ClInclude Include="src\SocketsUDP.hpp" />
     <ClInclude Include="src\stdafx.h" />

@@ -43,7 +43,7 @@ void ClientUDP()
 {
 	Sleep(2000);
 
-	BroadcasSendertSocketUDP<TextMessage> s("10.164.145.255:42042");
+	BroadcasSendertSocketUDP<TextMessage> s("10.1.19.255:42042");
 
 
 	TextMessage request("1234");

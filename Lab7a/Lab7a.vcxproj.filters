@@ -13,6 +13,24 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="TTT">
+      <UniqueIdentifier>{32e9fd53-cdea-434a-826d-275a18b032bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TTT\Server">
+      <UniqueIdentifier>{8631fb82-4d9f-41ae-9425-1002e1652a47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TTT\Client">
+      <UniqueIdentifier>{7adf5f6d-f1cc-4824-946f-f7537c2e9707}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TTT\Client\Network">
+      <UniqueIdentifier>{f747c861-144c-4410-87e2-451425dd5cfc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TTT\Client\GUI">
+      <UniqueIdentifier>{64e4c1ee-fbe2-4d99-9b08-2bdc1aef8cc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TTT\Client\Network\Sockets">
+      <UniqueIdentifier>{3156931b-dc9f-42ab-b958-deaee2093839}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -23,6 +41,12 @@
     </ClCompile>
     <ClCompile Include="src\Task1.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Client.cpp">
+      <Filter>TTT\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Server.cpp">
+      <Filter>TTT\Server</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -35,11 +59,20 @@
     <ClInclude Include="src\Tasks.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\NetworkMessage.hpp">
+      <Filter>TTT\Client\Network</Filter>
+    </ClInclude>
     <ClInclude Include="src\SocketsTCP.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>TTT\Client\Network\Sockets</Filter>
     </ClInclude>
     <ClInclude Include="src\SocketsUDP.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>TTT\Client\Network\Sockets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Client.hpp">
+      <Filter>TTT\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Server.hpp">
+      <Filter>TTT\Server</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
