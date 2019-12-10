@@ -28,10 +28,12 @@
     </ClCompile>
     <ClCompile Include="src\Lab7a.cpp" />
     <ClCompile Include="src\Task1.cpp" />
+    <ClCompile Include="src\TicTackToeGame.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Client.hpp" />
     <ClInclude Include="src\GUIController.hpp" />
+    <ClInclude Include="src\TicTackToeGame.hpp" />
     <ClInclude Include="src\UserCommand.hpp" />
     <ClInclude Include="src\NetworkController.hpp" />
     <ClInclude Include="src\NetworkMessage.hpp" />

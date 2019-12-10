@@ -51,6 +51,9 @@
     <ClCompile Include="src\NetworkController.cpp">
       <Filter>TTT\Client\Network</Filter>
     </ClCompile>
+    <ClCompile Include="src\TicTackToeGame.cpp">
+      <Filter>TTT</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
@@ -88,6 +91,9 @@
     </ClInclude>
     <ClInclude Include="src\UserCommand.hpp">
       <Filter>TTT\Client\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TicTackToeGame.hpp">
+      <Filter>TTT</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
