@@ -6,27 +6,28 @@
 
 #include "SocketsTCP.hpp"
 #include "SocketsUDP.hpp"
+#include "Client.hpp"
 
-
+/*
 void ServerUDP()
 {
 	BroadcastReceiverSocketUDP<TextMessage> serverSocket("42042");
-
+	
 	sockaddr_in sender;
-
+	
 	while (true)
 	{
 		TextMessage* result = serverSocket.TryReceive(100, sender);
-
+	
 		if (nullptr != result)
 		{
 			int bufsize = 100;
 			char* buf = new char[bufsize];
-
+	
 			inet_ntop(AF_INET, &(sender.sin_addr), buf, bufsize);
-
+	
 			std::cout << "Received " << result->Text() << " from " << std::string(buf) << std::endl;
-
+	
 			delete result;
 			delete[] buf;
 			
@@ -35,7 +36,7 @@ void ServerUDP()
 		else
 			std::cout << " Not received" << std::endl;
 	}
-
+	
 	Sleep(5000);
 }
 
@@ -123,11 +124,11 @@ void ClientTCP()
 
 	
 }
-
+*/
 
 void Task1::Do()
 {
-	WSADATA startupData;
+	/*WSADATA startupData;
 	auto startupResult = WSAStartup(MAKEWORD(2, 2), &startupData);
 	if (0 != startupResult)
 	{
@@ -146,5 +147,9 @@ void Task1::Do()
 	WSACleanup();
 
 
-	std::cout << "Here TTT will be one day" << std::endl;
+	std::cout << "Here TTT will be one day" << std::endl;*/
+
+	TTT::Client ticTackToeClient;
+
+	ticTackToeClient.Start();
 }
