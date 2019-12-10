@@ -52,6 +52,54 @@ namespace TTT
 		}
 
 
+		std::string ToString()
+		{
+			std::string result;
+
+			for (auto tile : _gameField)
+			{
+				switch (tile) 
+				{ 
+					case Tile::Empty:
+						result.append(" ");
+						break;
+
+					case Tile::X:
+						result.append("X");
+						break;
+					
+					case Tile::O:
+						result.append("O");
+						break;
+				}
+			}
+
+			return result;
+		}
+
+		TicTackToeGame(std::string fieldString)
+		{
+			for (auto i = 0; i < _gameField.size(); ++i)
+			{
+				switch (fieldString[i])
+				{
+					case ' ':
+						_gameField[i] = Tile::Empty;
+						break;
+
+					case 'X':
+						_gameField[i] = Tile::X;
+						break;
+
+					case 'O':
+						_gameField[i] = Tile::O;
+						break;
+
+					default:
+						throw std::invalid_argument("Game field parsing failed: wrong string");
+				}
+			}
+		}
 
 
 	private:
