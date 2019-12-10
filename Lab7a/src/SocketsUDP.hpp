@@ -5,15 +5,15 @@
 
 
 template<typename TMessage>
-class BroadcasSendertSocketUDP
+class BroadcastSenderSocketUDP
 {
 	//No copy allowed!
-	BroadcasSendertSocketUDP(BroadcasSendertSocketUDP& other) = delete;
-	void operator=(BroadcasSendertSocketUDP& other) = delete;
+	BroadcastSenderSocketUDP(BroadcastSenderSocketUDP& other) = delete;
+	void operator=(BroadcastSenderSocketUDP& other) = delete;
 
 public:
 	//Address should be formatted as "IP1.IP2.IP3.IP4:PORT"
-	explicit BroadcasSendertSocketUDP(std::string targetAddress) :
+	explicit BroadcastSenderSocketUDP(std::string targetAddress) :
 		_socketPtr(nullptr)
 	{
 		//Target address
@@ -35,7 +35,7 @@ public:
 		_socketPtr.reset(new SOCKET(newSocket));
 	}
 
-	~BroadcasSendertSocketUDP()
+	~BroadcastSenderSocketUDP()
 	{
 		if (nullptr != _socketPtr)
 			shutdown(*_socketPtr, SD_BOTH);
