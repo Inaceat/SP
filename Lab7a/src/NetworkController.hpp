@@ -1,9 +1,6 @@
 #pragma once
 
 
-#pragma once
-
-
 #include "SocketsTCP.hpp"
 #include "SocketsUDP.hpp"
 
@@ -16,60 +13,23 @@ namespace TTT
 	class NetworkController
 	{
 	public:
-		NetworkController()
-		{
-			//TODO mb move somewhere else
-			WSADATA startupData;
-			WSAStartup(MAKEWORD(2, 2), &startupData);
-		}
+		NetworkController();
 
-		~NetworkController()
-		{
-			//TODO mb move somewhere else
-			WSACleanup();
-		}
+		~NetworkController();
 
 
-		void Start()
-		{
-
-		}
+		void Start();
 
 
-		bool TryFindServer(int timeout)
-		{
-			ServerSocketTCP<NetworkMessage> connectionCreator("127.0.0.1:42042");
-
-			BroadcastSenderSocketUDP<NetworkMessage> registrationSender("127.0.0.255:42042");//TODO do smth with it
+		bool TryFindServer(int timeout);
 
 
-			NetworkMessage registrationMessage(NetworkMessage::Type::ClientConnectionAsk, "Hello");
+		void Send(NetworkMessage message);
 
-			registrationSender.Send(registrationMessage);
-
-
-			auto connection = connectionCreator.TryAcceptIncomingConnection(timeout);
-
-			if (nullptr == connection)
-				return false;
-
-			_connection = std::move(connection);
-
-			return true;
-		}
-
-		void Send(NetworkMessage message)
-		{
-			
-		}
-
-		NetworkMessage* TryReceive(int timeout)
-		{
-			return nullptr;
-		}
+		NetworkMessage* TryReceive(int timeout);
 
 
 	private:
-		ClientSocketTCP<NetworkMessage> _connection;
+		ClientSocketTCP<NetworkMessage> _serverConnectionSocket;
 	};
 }

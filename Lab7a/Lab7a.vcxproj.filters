@@ -48,6 +48,9 @@
     <ClCompile Include="src\Server.cpp">
       <Filter>TTT\Server</Filter>
     </ClCompile>
+    <ClCompile Include="src\NetworkController.cpp">
+      <Filter>TTT\Client\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
