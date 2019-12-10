@@ -2,6 +2,7 @@
 
 
 #include "NetworkController.hpp"
+#include "Server.hpp"
 
 
 namespace TTT
@@ -9,7 +10,8 @@ namespace TTT
 	class Client
 	{
 	public:
-		Client()
+		Client() :
+			_localServer(nullptr)
 		{
 			
 		}
@@ -25,6 +27,8 @@ namespace TTT
 			if (!serverFound)
 			{
 				//Create own server
+				_localServer = new Server();
+				_localServer->Start();
 
 				//Connect to local server
 				serverFound = _netController.TryFindServer(serverFindTimeout);
@@ -32,14 +36,14 @@ namespace TTT
 				//If connected to local, TODO
 				if (serverFound)
 				{
-					
+					std::cout << "connected to local" << std::endl;
 				}
 				else//If failed to connect to local server, PANIC
 					throw std::exception("Can't connect to local");
 			}
 			else
 			{
-				
+				std::cout << "connected to remote" << std::endl;
 			}
 
 
@@ -49,5 +53,7 @@ namespace TTT
 
 	private:
 		NetworkController _netController;
+
+		Server* _localServer;
 	};
 }
