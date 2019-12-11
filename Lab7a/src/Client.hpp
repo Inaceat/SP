@@ -103,7 +103,7 @@ namespace TTT
 								_guiController.ShowSearchingMessage();
 
 								//Send request to server
-								std::cout << "find" << std::endl;
+								_netController.Send(NetworkMessage(NetworkMessage::Type::ClientMMAsk, ""));
 							}
 						}break;
 
@@ -114,7 +114,7 @@ namespace TTT
 								_clientState = State::WaitingTurn;
 
 								//Send request to server
-								std::cout << "do " + command->GetData() << std::endl;
+								_netController.Send(NetworkMessage(NetworkMessage::Type::ClientGameAction, command->GetData()));
 							}
 						}break;
 
