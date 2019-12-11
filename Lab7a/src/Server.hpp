@@ -11,10 +11,15 @@ namespace TTT
 	class Server
 	{
 	public:
-		Server() :
-			_registrationReceiver("42042")
+		Server() : _isWorking(false),
+		           _registrationReceiver("42042")
 		{}
 
+		~Server()
+		{
+			_isWorking = false;
+			_workerThread.join();
+		}
 
 		void Start()
 		{
