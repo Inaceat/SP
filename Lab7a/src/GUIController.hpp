@@ -94,12 +94,6 @@ namespace TTT
 		}
 
 
-		void DisableInput()
-		{
-			_activeElement = GUIElement::None;
-		}
-
-
 		void ShowNetworkStatus(std::string newStatus)
 		{
 			std::cout << "Net: " << newStatus << std::endl;
@@ -110,6 +104,13 @@ namespace TTT
 			_activeElement = GUIElement::Menu;
 
 			std::cout << "0. Exit." << std::endl << "1. Find game." << std::endl;
+		}
+
+		void ShowSearchingMessage()
+		{
+			_activeElement = GUIElement::None;
+
+			std::cout << "Searching..." << std::endl;
 		}
 
 		void ShowGameField(TicTackToeGame gameState)
@@ -149,6 +150,12 @@ namespace TTT
 				std::cout << std::endl << "-------" << std::endl;
 			}
 		}
+
+		void ShowGameResult(std::string resultMessage)
+		{
+			std::cout << resultMessage << std::endl;
+		}
+
 
 	private:
 		InputController* _inputController;

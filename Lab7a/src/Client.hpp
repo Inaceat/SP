@@ -12,9 +12,19 @@ namespace TTT
 {
 	class Client
 	{
+		enum class State
+		{
+			None,
+			InMenu,
+			SearchingGame,
+			MakingTurn,
+			WaitingTurn
+		};
+
 	public:
 		Client() :
-			_localServer(nullptr)
+			_localServer(nullptr),
+			_clientState(State::None)
 		{}
 
 		~Client()
@@ -70,7 +80,8 @@ namespace TTT
 
 			//Now we are connected to server, so show menu and start Main Cycle
 			_guiController.ShowMenu();
-			
+			_clientState = State::InMenu;
+
 			const int mainTimeout = 100;
 
 			bool shouldWork = true;
@@ -83,27 +94,40 @@ namespace TTT
 					switch (command->GetType())
 					{
 						case UserCommand::Type::FindGame:
-							//Show "searching" message
-							_guiController.DisableInput();
-							//Send request to server
-							std::cout << "find" << std::endl;
+						{
+							if (State::InMenu == _clientState)
+							{
+								_clientState = State::SearchingGame;
 
-							_guiController.ShowGameField(_gameState);
+								//Switch to searching
+								_guiController.ShowSearchingMessage();
 
-							break;
+								//Send request to server
+								std::cout << "find" << std::endl;
+							}
+						}break;
 
 						case UserCommand::Type::DoGameAction:
-							//Send request to server
-							std::cout << "do " + command->GetData() << std::endl;
-							break;
+						{
+							if (State::MakingTurn == _clientState)
+							{
+								_clientState = State::WaitingTurn;
+
+								//Send request to server
+								std::cout << "do " + command->GetData() << std::endl;
+							}
+						}break;
 
 						case UserCommand::Type::Exit:
-							//Send deregistration message to server
-							shouldWork = false;
+						{
+							if (State::InMenu == _clientState)
+							{
+								shouldWork = false;
 
-							std::cout << "exit" << std::endl;
-							break;
-
+								//Send deregistration message to server
+								std::cout << "exit" << std::endl;
+							}
+						}break;
 
 						default:
 							break;
@@ -120,13 +144,40 @@ namespace TTT
 					switch (message->GetType())
 					{
 						case NetworkMessage::Type::ServerMMResult:
-							//Show search result
-							break;
+						{
+							if (State::SearchingGame == _clientState)
+							{
+								//TODO check if client really should make turn
+								_clientState = State::MakingTurn;
+
+								//Show search result & received initial game state
+								std::cout << "game found" << std::endl;
+							}
+						}break;
 
 						case NetworkMessage::Type::ServerGameState:
-							//Update game state & view
-							break;
+						{
+							if (State::WaitingTurn == _clientState)
+							{
+								//TODO check if client really should make turn
+								_clientState = State::MakingTurn;
 
+								//Update game state & view
+								std::cout << "game update" << std::endl;
+							}
+						}break;
+
+						case NetworkMessage::Type::ServerGameResult:
+						{
+							if (State::WaitingTurn == _clientState || State::MakingTurn == _clientState)
+							{
+								_clientState = State::InMenu;
+								
+								//Show game result & menu
+								_guiController.ShowGameResult("game finished");
+								_guiController.ShowMenu();
+							}
+						}break;
 
 						default: 
 							break;
@@ -145,7 +196,8 @@ namespace TTT
 
 		std::string _userName;
 
-		TicTackToeGame _gameState;
+		State _clientState;
 
+		TicTackToeGame _gameState;
 	};
 }

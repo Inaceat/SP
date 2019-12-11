@@ -14,7 +14,8 @@ namespace TTT
 			ClientDisconnect,
 
 			ServerMMResult,
-			ServerGameState
+			ServerGameState,
+			ServerGameResult
 		};
 
 
