@@ -101,8 +101,16 @@ namespace TTT
 			}
 		}
 
+		std::string ActivePlayerName() const
+		{
+			return _activePlayerName;
+		}
+
 
 	private:
 		std::array<Tile, 9> _gameField;
+
+		std::string _activePlayerName;//TODO modify class acordingly
+		std::string _waitingPlayerName;
 	};
 }

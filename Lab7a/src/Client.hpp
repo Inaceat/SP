@@ -147,11 +147,20 @@ namespace TTT
 						{
 							if (State::SearchingGame == _clientState)
 							{
-								//TODO check if client really should make turn
-								_clientState = State::MakingTurn;
+								TicTackToeGame receivedGameState(message->GetData());
 
-								//Show search result & received initial game state
-								std::cout << "game found" << std::endl;
+								if (_userName == receivedGameState.ActivePlayerName())
+								{
+									_clientState = State::MakingTurn;
+								}
+								else
+								{
+									_clientState = State::WaitingTurn;
+								}
+
+								_gameState = receivedGameState;
+								_guiController.ShowGame(_gameState);
+								
 							}
 						}break;
 
@@ -159,11 +168,16 @@ namespace TTT
 						{
 							if (State::WaitingTurn == _clientState)
 							{
-								//TODO check if client really should make turn
-								_clientState = State::MakingTurn;
+								TicTackToeGame receivedGameState(message->GetData());
 
-								//Update game state & view
-								std::cout << "game update" << std::endl;
+								if (_userName == receivedGameState.ActivePlayerName())
+								{
+									_clientState = State::MakingTurn;
+
+									_gameState = receivedGameState;
+									_guiController.ShowGame(_gameState);
+								}
+
 							}
 						}break;
 
@@ -174,7 +188,7 @@ namespace TTT
 								_clientState = State::InMenu;
 								
 								//Show game result & menu
-								_guiController.ShowGameResult("game finished");
+								_guiController.ShowGameResult(message->GetData());
 								_guiController.ShowMenu();
 							}
 						}break;

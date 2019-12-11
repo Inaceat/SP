@@ -113,7 +113,7 @@ namespace TTT
 			std::cout << "Searching..." << std::endl;
 		}
 
-		void ShowGameField(TicTackToeGame gameState)
+		void ShowGame(TicTackToeGame gameState)
 		{
 			_activeElement = GUIElement::GameField;
 
