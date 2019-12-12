@@ -38,7 +38,7 @@ namespace TTT
 			return true;
 		}
 
-		Tile GetTile(int row, int column)
+		Tile GetTile(int row, int column) const
 		{
 			//If wrong index, PANIC
 			if (row < 0 || 2 < row ||
@@ -116,6 +116,15 @@ namespace TTT
 			return _activePlayerName;
 		}
 
+		//TODO mb split to classes
+		TicTackToeGame(std::string activeName, std::string waitingName)
+		{
+			for (auto i = 0; i < _gameField.size(); ++i)
+				_gameField[i] = Tile::Empty;
+
+			_activePlayerName = activeName;
+			_waitingPlayerName = waitingName;
+		}
 
 	private:
 		std::array<Tile, 9> _gameField;

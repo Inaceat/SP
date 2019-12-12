@@ -3,7 +3,7 @@
 #include "SocketsTCP.hpp"
 #include "SocketsUDP.hpp"
 #include "NetworkMessage.hpp"
-
+#include "ServerGameEntry.hpp"
 
 
 namespace TTT
@@ -30,19 +30,43 @@ namespace TTT
 		void ProcessMessages()
 		{
 			int receiveTimeout = 100;
+			int updateTimeout = 100;
 
 			sockaddr_in senderAddress;
 
 			while (_isWorking)
 			{
+				//Process registration
 				NetworkMessage* message = _registrationReceiver.TryReceive(receiveTimeout, senderAddress);
 
 				if (nullptr != message)
 				{
-					_tempSocket = ClientSocketTCP<NetworkMessage>("127.0.0.1:42042");
+					ClientSocketTCP<NetworkMessage> newClientConnection(senderAddress);
 
-					Sleep(1000);
+					//If noone waits for game, make client waiting
+					if (nullptr == _queuedClientConection)
+					{
+						_queuedClientConection = std::move(newClientConnection);
+						_queuedClientName = message->GetData();
+					}
+					else
+					{
+						ServerGameEntry* newGameEntry = new ServerGameEntry(
+							(std::move(_queuedClientConection)), _queuedClientName,
+							(std::move(newClientConnection)), message->GetData());
+
+						_activeGames.push_back(newGameEntry);
+					}
+
+					delete message;
 				}
+
+				//Process clients
+				for (auto game : _activeGames)
+					game->Update(updateTimeout);
+
+				//Remove finished games
+				_activeGames.remove_if([](ServerGameEntry* game){ return game->IsFinished(); });
 			}
 		}
 
@@ -52,6 +76,9 @@ namespace TTT
 
 		BroadcastReceiverSocketUDP<NetworkMessage> _registrationReceiver;
 
-		ClientSocketTCP<NetworkMessage> _tempSocket;
+		ClientSocketTCP<NetworkMessage> _queuedClientConection;
+		std::string _queuedClientName;
+
+		std::list<ServerGameEntry*> _activeGames;
 	};
 }

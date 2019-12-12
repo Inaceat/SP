@@ -122,5 +122,8 @@
     <ClInclude Include="src\MessagePipeOutput.hpp">
       <Filter>TTT\Client\GUI\MessagePipe</Filter>
     </ClInclude>
+    <ClInclude Include="src\ServerGameEntry.hpp">
+      <Filter>TTT\Server</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
