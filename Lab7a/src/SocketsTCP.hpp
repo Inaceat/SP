@@ -56,6 +56,30 @@ public:
 		_socketPtr.reset(new SOCKET(newSocket));
 	}
 
+	explicit ClientSocketTCP(sockaddr_in address) :
+		_socketPtr(nullptr)
+	{
+		//TODO maybe validate {address}?
+		
+		//Create
+		SOCKET newSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+		
+		if (INVALID_SOCKET == newSocket)
+			return;
+
+
+		//Connect
+		if (0 != connect(newSocket, reinterpret_cast<sockaddr*>(&address), sizeof(sockaddr)))
+		{
+			closesocket(newSocket);
+			return;
+		}
+
+
+		_socketPtr.reset(new SOCKET(newSocket));
+	}
+
+
 	ClientSocketTCP(ClientSocketTCP&& other) noexcept
 	{
 		_socketPtr = other._socketPtr;
