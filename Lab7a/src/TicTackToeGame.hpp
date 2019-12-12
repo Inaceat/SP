@@ -74,11 +74,21 @@ namespace TTT
 				}
 			}
 
+			result.append("$").append(_activePlayerName).append("$").append(_waitingPlayerName);
+
 			return result;
 		}
 
-		TicTackToeGame(std::string fieldString)
+		TicTackToeGame(std::string stringRepresentation)
 		{
+			std::string fieldString(stringRepresentation, 0, stringRepresentation.find("$"));
+			
+			std::string names(stringRepresentation,  stringRepresentation.find("$") + 1, std::string::npos);
+
+			_activePlayerName = std::string(names, 0, names.find("$"));
+			_waitingPlayerName = std::string(names, names.find("$") + 1, std::string::npos);
+
+
 			for (auto i = 0; i < _gameField.size(); ++i)
 			{
 				switch (fieldString[i])
@@ -110,7 +120,7 @@ namespace TTT
 	private:
 		std::array<Tile, 9> _gameField;
 
-		std::string _activePlayerName;//TODO modify class acordingly
+		std::string _activePlayerName;
 		std::string _waitingPlayerName;
 	};
 }
