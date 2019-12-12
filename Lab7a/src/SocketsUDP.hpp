@@ -12,10 +12,18 @@ class BroadcastSenderSocketUDP
 	void operator=(BroadcastSenderSocketUDP& other) = delete;
 
 public:
-	//Address should be formatted as "IP1.IP2.IP3.IP4:PORT"
-	explicit BroadcastSenderSocketUDP(std::string targetAddress) :
+	//Addresses should be formatted as "IP1.IP2.IP3.IP4:PORT"
+	explicit BroadcastSenderSocketUDP(std::string localAddress, std::string targetAddress) :
 		_socketPtr(nullptr)
 	{
+		sockaddr_in local;
+		ZeroMemory(&local, sizeof(local));
+
+		local.sin_family = AF_INET;
+		local.sin_port = htons(atoi(localAddress.substr(localAddress.find(":") + 1, std::string::npos).c_str()));
+		inet_pton(AF_INET, localAddress.substr(0, localAddress.find(":")).c_str(), &(local.sin_addr));
+
+
 		//Target address
 		ZeroMemory(&_targetAddress, sizeof(_targetAddress));
 		
@@ -31,6 +39,8 @@ public:
 		BOOL opt = TRUE;
 		setsockopt(newSocket, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char*>(&opt), sizeof(opt));
 
+
+		bind(newSocket, reinterpret_cast<sockaddr*>(&local), sizeof(local));
 
 		_socketPtr.reset(new SOCKET(newSocket));
 	}

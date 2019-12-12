@@ -27,7 +27,7 @@ namespace TTT
 	{
 		ServerSocketTCP<NetworkMessage> connectionCreator("127.0.0.1:42042");
 
-		BroadcastSenderSocketUDP<NetworkMessage> registrationSender("127.0.0.255:42042"); //TODO do smth with it
+		BroadcastSenderSocketUDP<NetworkMessage> registrationSender("127.0.0.1:42042", "127.0.0.255:42042"); //TODO do smth with it
 
 
 		NetworkMessage registrationMessage(NetworkMessage::Type::ClientConnectionAsk, userName);
