@@ -34,6 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Client.hpp" />
+    <ClInclude Include="src\ClientEntry.hpp" />
     <ClInclude Include="src\GUIController.hpp" />
     <ClInclude Include="src\InputController.hpp" />
     <ClInclude Include="src\InputMessage.hpp" />

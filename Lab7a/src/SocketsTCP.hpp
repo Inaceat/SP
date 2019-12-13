@@ -82,7 +82,7 @@ public:
 
 	ClientSocketTCP(ClientSocketTCP&& other) noexcept
 	{
-		_socketPtr = other._socketPtr;
+		_socketPtr = std::move(other._socketPtr);
 	}
 
 	void operator=(ClientSocketTCP&& other) noexcept
@@ -207,7 +207,7 @@ public:
 		}
 
 		//Now buffer has all data we need, so now we read it
-		recv(*_socketPtr, messageBuffer, messageLength + sizeof(messageLength), 0);
+		bytesReceived = recv(*_socketPtr, messageBuffer, messageLength + sizeof(messageLength), 0);
 
 
 		TMessage* result = new TMessage(messageBuffer + sizeof(messageLength), messageLength);

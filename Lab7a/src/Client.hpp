@@ -152,15 +152,17 @@ namespace TTT
 								if (_userName == receivedGameState.ActivePlayerName())
 								{
 									_clientState = State::MakingTurn;
+									_guiController.ShowGameStatus("Make your turn... wisely");
 								}
 								else
 								{
 									_clientState = State::WaitingTurn;
+									_guiController.ShowGameStatus("Wait for your turn");
 								}
 
 								_gameState = receivedGameState;
 								_guiController.ShowGame(_gameState);
-								
+
 							}
 						}break;
 
@@ -175,8 +177,12 @@ namespace TTT
 									_clientState = State::MakingTurn;
 
 									_gameState = receivedGameState;
+									
 									_guiController.ShowGame(_gameState);
+									_guiController.ShowGameStatus("Make your turn... wisely");
 								}
+								else
+									_guiController.ShowGameStatus("Wait for your turn");
 
 							}
 						}break;

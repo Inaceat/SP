@@ -54,7 +54,7 @@ namespace TTT
 			bytes[0] = static_cast<char>(_type);
 
 			//Copy data string
-			strcpy_s(bytes + 1, *bytesSize - 1, _data.c_str());
+			memcpy_s(bytes + 1, *bytesSize - 1, _data.c_str(), _data.size() + 1);
 
 			return bytes;
 		}

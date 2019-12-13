@@ -151,6 +151,11 @@ namespace TTT
 			}
 		}
 
+		void ShowGameStatus(std::string newStatus)
+		{
+			std::cout << newStatus << std::endl;
+		}
+
 		void ShowGameResult(std::string resultMessage)
 		{
 			std::cout << resultMessage << std::endl;

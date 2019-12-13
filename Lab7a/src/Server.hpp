@@ -4,6 +4,7 @@
 #include "SocketsUDP.hpp"
 #include "NetworkMessage.hpp"
 #include "ServerGameEntry.hpp"
+#include "ClientEntry.hpp"
 
 
 namespace TTT
@@ -37,28 +38,40 @@ namespace TTT
 			while (_isWorking)
 			{
 				//Process registration
-				NetworkMessage* message = _registrationReceiver.TryReceive(receiveTimeout, senderAddress);
+				NetworkMessage* registerMessage = _registrationReceiver.TryReceive(receiveTimeout, senderAddress);
 
-				if (nullptr != message)
+				if (nullptr != registerMessage)
 				{
 					ClientSocketTCP<NetworkMessage> newClientConnection(senderAddress);
 
-					//If noone waits for game, make client waiting
-					if (nullptr == _queuedClientConection)
+					//Add to registered
+					_registeredClients.push_back(std::move(ClientEntry(registerMessage->GetData(), std::move(newClientConnection))));
+
+					delete registerMessage;
+				}
+
+				//Process MM
+				for (auto client = _registeredClients.begin(); client < _registeredClients.end();)
+				{
+					NetworkMessage* clientMessage = client->TryReceive(receiveTimeout);
+					if (nullptr != clientMessage && NetworkMessage::Type::ClientMMAsk == clientMessage->GetType())
 					{
-						_queuedClientConection = std::move(newClientConnection);
-						_queuedClientName = message->GetData();
+						//If noone waits for game, make client waiting
+						if (nullptr == _queuedClient)
+						{
+							_queuedClient = std::move(*client);
+						}
+						else//Create game
+						{
+							ServerGameEntry* newGameEntry = new ServerGameEntry(std::move(_queuedClient), std::move(*client));
+
+							_activeGames.push_back(newGameEntry);
+						}
+
+						client = _registeredClients.erase(client);
 					}
 					else
-					{
-						ServerGameEntry* newGameEntry = new ServerGameEntry(
-							(std::move(_queuedClientConection)), _queuedClientName,
-							(std::move(newClientConnection)), message->GetData());
-
-						_activeGames.push_back(newGameEntry);
-					}
-
-					delete message;
+						++client;//Not in 'for' because of 'erase'
 				}
 
 				//Process clients
@@ -76,8 +89,9 @@ namespace TTT
 
 		BroadcastReceiverSocketUDP<NetworkMessage> _registrationReceiver;
 
-		ClientSocketTCP<NetworkMessage> _queuedClientConection;
-		std::string _queuedClientName;
+		std::vector<ClientEntry> _registeredClients;
+
+		ClientEntry _queuedClient;
 
 		std::list<ServerGameEntry*> _activeGames;
 	};

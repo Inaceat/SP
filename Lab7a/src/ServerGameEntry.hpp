@@ -1,5 +1,6 @@
 #pragma once
 #include "TicTackToeGame.hpp"
+#include "ClientEntry.hpp"
 
 
 namespace TTT
@@ -17,29 +18,23 @@ namespace TTT
 		void operator=(ServerGameEntry& other) = delete;
 
 	public:
-		ServerGameEntry(
-			ClientSocketTCP<NetworkMessage>&& firstPlayerConnection, std::string firstPlayerName,
-			ClientSocketTCP<NetworkMessage>&& secondPlayerConnection, std::string secondPlayerName)
+		ServerGameEntry(ClientEntry&& firstPlayer, ClientEntry&& secondPlayer) :
+			_firstPlayer(std::move(firstPlayer)),
+			_secondPlayer(std::move(secondPlayer))
 		{
-			_firstPlayerName = firstPlayerName;
-			_firstPlayerConnection = std::move(firstPlayerConnection);
-
-			_secondPlayerName = secondPlayerName;
-			_secondPlayerConnection = std::move(secondPlayerConnection);
-
 			//First is active
-			_gameState = TicTackToeGame(_firstPlayerName, _secondPlayerName);
+			_gameState = TicTackToeGame(_firstPlayer.Name(), _secondPlayer.Name());
 
 			//Send MMResult to both players
-			_firstPlayerConnection.Send(NetworkMessage(NetworkMessage::Type::ServerMMResult, _gameState.ToString()));
+			_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerMMResult, _gameState.ToString()));
 
-			_secondPlayerConnection.Send(NetworkMessage(NetworkMessage::Type::ServerMMResult, _gameState.ToString()));
+			_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerMMResult, _gameState.ToString()));
 		}
 
 		void Update(int timeout)
 		{
 			//Process clients messages
-			NetworkMessage* firstMessage = _firstPlayerConnection.TryReceive(timeout);
+			NetworkMessage* firstMessage = _firstPlayer.TryReceive(timeout);
 
 			if (nullptr != firstMessage && 
 				NetworkMessage::Type::ClientGameAction == firstMessage->GetType())
@@ -48,14 +43,14 @@ namespace TTT
 
 				//update game
 
-				_firstPlayerConnection.Send(NetworkMessage(NetworkMessage::Type::ServerMMResult, _gameState.ToString()));
-				_secondPlayerConnection.Send(NetworkMessage(NetworkMessage::Type::ServerMMResult, _gameState.ToString()));
+				_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerMMResult, _gameState.ToString()));
+				_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerMMResult, _gameState.ToString()));
 
 				delete firstMessage;
 			}
 
 
-			NetworkMessage* secondMessage = _firstPlayerConnection.TryReceive(timeout);
+			NetworkMessage* secondMessage = _firstPlayer.TryReceive(timeout);
 
 			if (nullptr != secondMessage && 
 				NetworkMessage::Type::ClientGameAction == secondMessage->GetType())
@@ -64,8 +59,8 @@ namespace TTT
 
 				//update game
 
-				_firstPlayerConnection.Send(NetworkMessage(NetworkMessage::Type::ServerMMResult, _gameState.ToString()));
-				_secondPlayerConnection.Send(NetworkMessage(NetworkMessage::Type::ServerMMResult, _gameState.ToString()));
+				_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerMMResult, _gameState.ToString()));
+				_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerMMResult, _gameState.ToString()));
 
 				delete secondMessage;
 			}
@@ -84,12 +79,9 @@ namespace TTT
 
 
 	private:
-		//First makes first mvoe, and uses X
-		std::string _firstPlayerName;
-		ClientSocketTCP<NetworkMessage> _firstPlayerConnection;
-
-		std::string _secondPlayerName;
-		ClientSocketTCP<NetworkMessage> _secondPlayerConnection;
+		//First makes first move, and uses X
+		ClientEntry _firstPlayer;
+		ClientEntry _secondPlayer;
 
 		TicTackToeGame _gameState;
 	};
