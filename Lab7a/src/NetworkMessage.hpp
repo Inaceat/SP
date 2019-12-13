@@ -41,7 +41,7 @@ namespace TTT
 		{
 			_type = static_cast<Type>(bytes[0]);
 
-			_data = std::string(bytes + 1, bytesSize - 1);
+			_data = std::string(bytes + 1, bytesSize - 2);
 		}
 
 		char* GetMessageBytes(int* bytesSize) const
