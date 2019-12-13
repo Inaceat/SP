@@ -78,6 +78,7 @@ namespace TTT
 				for (auto game : _activeGames)
 					game->Update(updateTimeout);
 
+				//TODO move connections from games to registered clients
 				//Remove finished games
 				_activeGames.remove_if([](ServerGameEntry* game){ return game->IsFinished(); });
 			}

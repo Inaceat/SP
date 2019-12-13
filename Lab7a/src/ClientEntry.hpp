@@ -1,6 +1,10 @@
 #pragma once
 
 
+#include "SocketsTCP.hpp"
+#include "NetworkMessage.hpp"
+
+
 namespace TTT
 {
 	class ClientEntry

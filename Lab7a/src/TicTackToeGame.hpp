@@ -3,6 +3,13 @@
 
 namespace TTT
 {
+	enum class Result
+	{
+		Draw,
+		XWin,
+		OWin
+	};
+
 	enum class Tile
 	{
 		Empty,
@@ -116,6 +123,31 @@ namespace TTT
 			return _activePlayerName;
 		}
 
+
+		bool IsFinished() const
+		{
+
+
+			/*int emptyTilesCount = 0;
+
+			for (auto tile : _gameField)
+			{
+				if (Tile::Empty == tile)
+					++emptyTilesCount;
+			}
+
+			return 0 == emptyTilesCount;*/
+			return false;
+		}
+		
+		Result Result() const
+		{
+
+
+			return Result::Draw;
+		}
+
+
 		//TODO mb split to classes
 		TicTackToeGame(std::string activeName, std::string waitingName)
 		{
@@ -125,6 +157,34 @@ namespace TTT
 			_activePlayerName = activeName;
 			_waitingPlayerName = waitingName;
 		}
+
+		//ok, this is not good
+		void SwapPlayers()
+		{
+			std::swap(_activePlayerName, _waitingPlayerName);
+		}
+
+
+	private:
+		TTT::Result SetCompletionResult(int index1, int index2, int index3)
+		{
+			if (Tile::X == _gameField[index1] &&
+				Tile::X == _gameField[index2] &&
+				Tile::X == _gameField[index3])
+			{
+				return Result::XWin;
+			}
+
+			if (Tile::O == _gameField[index1] &&
+				Tile::O == _gameField[index2] &&
+				Tile::O == _gameField[index3])
+			{
+				return Result::OWin;
+			}
+
+			return Result::Draw;
+		}
+
 
 	private:
 		std::array<Tile, 9> _gameField;
