@@ -117,7 +117,7 @@ namespace TTT
 		}
 
 
-		//TODO mb split to classes
+		//TODO Seems like it would be better to split to server & client parts, maybe subclasses of some basic "Game" class
 		TicTackToeGame(std::string activeName, std::string waitingName)
 		{
 			for (auto i = 0; i < _gameField.size(); ++i)

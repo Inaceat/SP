@@ -15,7 +15,6 @@ namespace TTT
 
 	NetworkController::~NetworkController()
 	{
-		//TODO mb move somewhere else
 		WSACleanup();
 	}
 
@@ -25,9 +24,9 @@ namespace TTT
 
 	bool NetworkController::TryFindServerAs(std::string userName, int timeout)
 	{
-		ServerSocketTCP<NetworkMessage> connectionCreator("127.0.0.1:42042");
+		ServerSocketTCP<NetworkMessage> connectionCreator("127.0.0.1:42042");//TODO addresses are hard-coded, and would be better to do smth with it
 
-		BroadcastSenderSocketUDP<NetworkMessage> registrationSender("127.0.0.1:42042", "127.0.0.255:42042"); //TODO do smth with it
+		BroadcastSenderSocketUDP<NetworkMessage> registrationSender("127.0.0.1:42042", "127.0.0.255:42042");
 
 
 		NetworkMessage registrationMessage(NetworkMessage::Type::ClientConnectionAsk, userName);

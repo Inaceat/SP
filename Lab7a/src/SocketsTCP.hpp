@@ -27,7 +27,7 @@ public:
 	explicit ClientSocketTCP(std::string targetAddress) :
 		_socketPtr(nullptr)
 	{
-		//TODO maybe validate {address}?
+		//TODO Would be better to validate {address}
 		
 		//Create
 		SOCKET newSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -59,7 +59,7 @@ public:
 	explicit ClientSocketTCP(sockaddr_in targetAddress) :
 		_socketPtr(nullptr)
 	{
-		//TODO maybe validate {address}?
+		//TODO Would be better to validate {address}
 		
 		//Create
 		SOCKET newSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -244,7 +244,7 @@ public:
 	//Address should be formatted as "IP1.IP2.IP3.IP4:PORT"
 	explicit ServerSocketTCP(std::string localAddress)
 	{
-		//TODO maybe validate {address}?
+		//TODO Would be better to validate {address}
 		
 		//Create
 		SOCKET newSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);

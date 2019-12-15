@@ -108,7 +108,7 @@ public:
 		u_long mode = 1;
 		ioctlsocket(newSocket, FIONBIO, &mode);
 
-		//Set address automatically //TODO maybe change?
+		//Set address automatically
 		sockaddr_in local;
 		ZeroMemory(&local, sizeof(local));
 
