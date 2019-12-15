@@ -24,7 +24,7 @@ public:
 	ClientSocketTCP() = default;
 
 	//Address should be formatted as "IP1.IP2.IP3.IP4:PORT"
-	explicit ClientSocketTCP(std::string address) :
+	explicit ClientSocketTCP(std::string targetAddress) :
 		_socketPtr(nullptr)
 	{
 		//TODO maybe validate {address}?
@@ -41,8 +41,8 @@ public:
 		ZeroMemory(&addressInfo, sizeof(sockaddr_in));
 
 		addressInfo.sin_family = AF_INET;
-		addressInfo.sin_port = htons(atoi(address.substr(address.find(":") + 1, std::string::npos).c_str()));
-		inet_pton(AF_INET, address.substr(0, address.find(":")).c_str(), &(addressInfo.sin_addr));
+		addressInfo.sin_port = htons(atoi(targetAddress.substr(targetAddress.find(":") + 1, std::string::npos).c_str()));
+		inet_pton(AF_INET, targetAddress.substr(0, targetAddress.find(":")).c_str(), &(addressInfo.sin_addr));
 		
 
 
@@ -56,7 +56,7 @@ public:
 		_socketPtr.reset(new SOCKET(newSocket));
 	}
 
-	explicit ClientSocketTCP(sockaddr_in address) :
+	explicit ClientSocketTCP(sockaddr_in targetAddress) :
 		_socketPtr(nullptr)
 	{
 		//TODO maybe validate {address}?
@@ -69,7 +69,7 @@ public:
 
 
 		//Connect
-		if (0 != connect(newSocket, reinterpret_cast<sockaddr*>(&address), sizeof(sockaddr)))
+		if (0 != connect(newSocket, reinterpret_cast<sockaddr*>(&targetAddress), sizeof(sockaddr)))
 		{
 			closesocket(newSocket);
 			return;
@@ -242,7 +242,7 @@ class ServerSocketTCP
 {
 public:
 	//Address should be formatted as "IP1.IP2.IP3.IP4:PORT"
-	explicit ServerSocketTCP(std::string address)
+	explicit ServerSocketTCP(std::string localAddress)
 	{
 		//TODO maybe validate {address}?
 		
@@ -258,8 +258,8 @@ public:
 		ZeroMemory(&addressInfo, sizeof(sockaddr_in));
 
 		addressInfo.sin_family = AF_INET;
-		addressInfo.sin_port = htons(atoi(address.substr(address.find(":") + 1, std::string::npos).c_str()));
-		inet_pton(AF_INET, address.substr(0, address.find(":")).c_str(), &(addressInfo.sin_addr));
+		addressInfo.sin_port = htons(atoi(localAddress.substr(localAddress.find(":") + 1, std::string::npos).c_str()));
+		inet_pton(AF_INET, localAddress.substr(0, localAddress.find(":")).c_str(), &(addressInfo.sin_addr));
 
 
 		if (0 != bind(newSocket, reinterpret_cast<sockaddr*>(&addressInfo), sizeof(sockaddr)))
