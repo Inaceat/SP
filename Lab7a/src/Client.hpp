@@ -194,9 +194,13 @@ namespace TTT
 							if (State::WaitingTurn == _clientState || State::MakingTurn == _clientState)
 							{
 								_clientState = State::InMenu;
-								
+
+								std::string gameField = message->GetData().substr(0, message->GetData().find("#"));
+								std::string gameResult = message->GetData().substr(message->GetData().find("#") + 1, std::string::npos);
+
 								//Show game result & menu
-								_guiController.ShowGameResult(message->GetData());
+								_guiController.ShowGame(TicTackToeGame(gameField));
+								_guiController.ShowGameResult(gameResult);
 								_guiController.ShowMenu();
 							}
 						}break;

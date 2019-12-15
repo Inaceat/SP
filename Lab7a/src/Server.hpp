@@ -76,9 +76,17 @@ namespace TTT
 
 				//Process clients
 				for (auto game : _activeGames)
+				{
 					game->Update(updateTimeout);
 
-				//TODO move connections from games to registered clients
+					//Move connections from games to registered clients
+					if (game->IsFinished())
+					{
+						_registeredClients.push_back(std::move(game->FirstPlayer()));
+						_registeredClients.push_back(std::move(game->SecondPlayer()));
+					}
+				}
+				
 				//Remove finished games
 				_activeGames.remove_if([](ServerGameEntry* game){ return game->IsFinished(); });
 			}

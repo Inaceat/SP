@@ -68,25 +68,25 @@ namespace TTT
 					//Check result
 					switch (_gameResult)
 					{
-						//If finished, send game appropriate results
+						//If finished, send game results
 						case Result::Draw:
 						{
-							_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "Draw!"));
-							_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "Draw!"));
+							_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, _gameState.ToString() + "#Draw!"));
+							_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, _gameState.ToString() + "#Draw!"));
 
 						}break;
 
 						case Result::XWin:
 						{
-							_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You win!"));
-							_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You lose!"));
+							_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, _gameState.ToString() + "#You win!"));
+							_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, _gameState.ToString() + "#You lose!"));
 
 						}break;
 
 						case Result::OWin:
 						{
-							_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You lose!"));
-							_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You win!"));
+							_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, _gameState.ToString() + "#You lose!"));
+							_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, _gameState.ToString() + "#You win!"));
 
 						}break;
 
@@ -139,25 +139,25 @@ namespace TTT
 					//Check result
 					switch (_gameResult)
 					{
-						//If finished, send game appropriate results
+						//If finished, send game results
 						case Result::Draw:
 						{
-							_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "Draw!"));
-							_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "Draw!"));
+							_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, _gameState.ToString() + "#Draw!"));
+							_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, _gameState.ToString() + "#Draw!"));
 
 						}break;
 
 						case Result::XWin:
 						{
-							_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You win!"));
-							_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You lose!"));
+							_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, _gameState.ToString() + "#You win!"));
+							_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, _gameState.ToString() + "#You lose!"));
 
 						}break;
 
 						case Result::OWin:
 						{
-							_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You lose!"));
-							_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You win!"));
+							_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, _gameState.ToString() + "#You lose!"));
+							_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, _gameState.ToString() + "#You win!"));
 
 						}break;
 
@@ -186,6 +186,17 @@ namespace TTT
 		bool IsFinished() const
 		{
 			return _gameResult != Result::None;
+		}
+
+
+		ClientEntry& FirstPlayer()
+		{
+			return _firstPlayer;
+		}
+
+		ClientEntry& SecondPlayer()
+		{
+			return _secondPlayer;
 		}
 
 
