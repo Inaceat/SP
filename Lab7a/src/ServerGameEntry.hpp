@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include "TicTackToeGame.hpp"
 #include "ClientEntry.hpp"
 
@@ -8,13 +9,23 @@ namespace TTT
 {
 	class ServerGameEntry
 	{
+		enum class Result
+		{
+			None,
+			Draw,
+			XWin,
+			OWin
+		};
+
+
 		ServerGameEntry(ServerGameEntry& other) = delete;
 		void operator=(ServerGameEntry& other) = delete;
 
 	public:
 		ServerGameEntry(ClientEntry&& firstPlayer, ClientEntry&& secondPlayer) :
 			_firstPlayer(std::move(firstPlayer)),
-			_secondPlayer(std::move(secondPlayer))
+			_secondPlayer(std::move(secondPlayer)),
+			_gameResult(Result::None)
 		{
 			//First is active
 			_gameState = TicTackToeGame(_firstPlayer.Name(), _secondPlayer.Name());
@@ -35,43 +46,59 @@ namespace TTT
 			{
 				int move = stoi(firstMessage->GetData());
 
+				int moveRow = (move - 1) / 3;
+				int moveColumn = (move - 1) % 3;
+
 				//Update game
 				//If turn is valid
-				if (_gameState.SetTile((move - 1) / 3, (move-1)%3, Tile::X))
+				if (_gameState.SetTile(moveRow, moveColumn, Tile::X))
 				{
-					//If finished, send game results
-					if (_gameState.IsFinished())
+					//Update game result
+					if (Result::XWin == CheckRow(moveRow) ||		//Check row
+						Result::XWin == CheckColumn(moveColumn) ||	//Check column
+						Result::XWin == CheckDiagonals())			//Check diagonals
 					{
-						switch (_gameState.Result())
-						{
-							case Result::Draw:
-							{
-								_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "Draw!"));
-								_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "Draw!"));
-
-							}break;
-
-							case Result::XWin:
-							{
-								_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You win!"));
-								_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You lose!"));
-
-							}break;
-
-							case Result::OWin:
-							{
-								_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You lose!"));
-								_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You win!"));
-
-							}break;
-						}
+						_gameResult = Result::XWin;
 					}
-					else//If not yet finished, swap sides, send turn results
+					else if (IsFieldFull())//Check if field is full
 					{
-						_gameState.SwapPlayers();
+						_gameResult = Result::Draw;
+					}
 
-						_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameState, _gameState.ToString()));
-						_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameState, _gameState.ToString()));
+					//Check result
+					switch (_gameResult)
+					{
+						//If finished, send game appropriate results
+						case Result::Draw:
+						{
+							_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "Draw!"));
+							_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "Draw!"));
+
+						}break;
+
+						case Result::XWin:
+						{
+							_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You win!"));
+							_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You lose!"));
+
+						}break;
+
+						case Result::OWin:
+						{
+							_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You lose!"));
+							_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You win!"));
+
+						}break;
+
+						//If not yet finished, swap sides, send turn results
+						case Result::None:
+						{
+							_gameState.SwapPlayers();
+
+							_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameState, _gameState.ToString()));
+							_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameState, _gameState.ToString()));
+
+						}break;
 					}
 				}
 				else//If turn is invalid, send to player made it same state. For second player nothing changes
@@ -90,47 +117,59 @@ namespace TTT
 			{
 				int move = stoi(secondMessage->GetData());
 
+				int moveRow = (move - 1) / 3;
+				int moveColumn = (move - 1) % 3;
+
 				//Update game
 				//If turn is valid
-				if (_gameState.SetTile((move - 1) / 3, (move-1)%3, Tile::O))
+				if (_gameState.SetTile(moveRow, moveColumn, Tile::O))
 				{
-					//If finished, send game results
-					if (_gameState.IsFinished())
+					//Update game result
+					if (Result::OWin == CheckRow(moveRow) ||		//Check row
+						Result::OWin == CheckColumn(moveColumn) ||	//Check column
+						Result::OWin == CheckDiagonals())			//Check diagonals
 					{
-						//Send finished game to show
-						_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameState, _gameState.ToString()));
-						_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameState, _gameState.ToString()));
-
-						switch (_gameState.Result())
-						{
-							case Result::Draw:
-							{
-								_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "Draw!"));
-								_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "Draw!"));
-
-							}break;
-
-							case Result::XWin:
-							{
-								_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You win!"));
-								_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You lose!"));
-
-							}break;
-
-							case Result::OWin:
-							{
-								_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You lose!"));
-								_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You win!"));
-
-							}break;
-						}
+						_gameResult = Result::OWin;
 					}
-					else//If not yet finished, swap sides, send turn results
+					else if (IsFieldFull())//Check if field is full
 					{
-						_gameState.SwapPlayers();
+						_gameResult = Result::Draw;
+					}
 
-						_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameState, _gameState.ToString()));
-						_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameState, _gameState.ToString()));
+					//Check result
+					switch (_gameResult)
+					{
+						//If finished, send game appropriate results
+						case Result::Draw:
+						{
+							_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "Draw!"));
+							_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "Draw!"));
+
+						}break;
+
+						case Result::XWin:
+						{
+							_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You win!"));
+							_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You lose!"));
+
+						}break;
+
+						case Result::OWin:
+						{
+							_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You lose!"));
+							_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameResult, "You win!"));
+
+						}break;
+
+						//If not yet finished, swap sides, send turn results
+						case Result::None:
+						{
+							_gameState.SwapPlayers();
+
+							_firstPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameState, _gameState.ToString()));
+							_secondPlayer.Send(NetworkMessage(NetworkMessage::Type::ServerGameState, _gameState.ToString()));
+
+						}break;
 					}
 				}
 				else//If turn is invalid, send to player made it same state. For second player nothing changes
@@ -143,9 +182,99 @@ namespace TTT
 
 		}
 
+
 		bool IsFinished() const
 		{
-			return _gameState.IsFinished();
+			return _gameResult != Result::None;
+		}
+
+
+	private:
+		Result CheckRow(int row) const
+		{
+			if (Tile::X == _gameState.GetTile(row, 0) &&
+				Tile::X == _gameState.GetTile(row, 1) &&
+				Tile::X == _gameState.GetTile(row, 2))
+			{
+				return Result::XWin;
+			}
+
+			if (Tile::O == _gameState.GetTile(row, 0) &&
+				Tile::O == _gameState.GetTile(row, 1) &&
+				Tile::O == _gameState.GetTile(row, 2))
+			{
+				return Result::OWin;
+			}
+
+			return Result::Draw;
+		}
+
+		Result CheckColumn(int column) const
+		{
+			if (Tile::X == _gameState.GetTile(0, column) &&
+				Tile::X == _gameState.GetTile(1, column) &&
+				Tile::X == _gameState.GetTile(2, column))
+			{
+				return Result::XWin;
+			}
+
+			if (Tile::O == _gameState.GetTile(0, column) &&
+				Tile::O == _gameState.GetTile(1, column) &&
+				Tile::O == _gameState.GetTile(2, column))
+			{
+				return Result::OWin;
+			}
+
+			return Result::Draw;
+		}
+
+		Result CheckDiagonals() const
+		{
+			//Left to right diag
+			if (Tile::X == _gameState.GetTile(0, 0) &&
+				Tile::X == _gameState.GetTile(1, 1) &&
+				Tile::X == _gameState.GetTile(2, 2))
+			{
+				return Result::XWin;
+			}
+
+			if (Tile::O == _gameState.GetTile(0, 0) &&
+				Tile::O == _gameState.GetTile(1, 1) &&
+				Tile::O == _gameState.GetTile(2, 2))
+			{
+				return Result::OWin;
+			}
+
+			//Right to left diag
+			if (Tile::X == _gameState.GetTile(0, 2) &&
+				Tile::X == _gameState.GetTile(1, 1) &&
+				Tile::X == _gameState.GetTile(2, 0))
+			{
+				return Result::XWin;
+			}
+
+			if (Tile::O == _gameState.GetTile(0, 2) &&
+				Tile::O == _gameState.GetTile(1, 1) &&
+				Tile::O == _gameState.GetTile(2, 0))
+			{
+				return Result::OWin;
+			}
+
+			return Result::Draw;
+		}
+
+		bool IsFieldFull() const
+		{
+			int emptyTilesCount = 0;
+
+			for (int i = 0; i < 3; ++i)
+				for (int j = 0; j < 3; ++j)
+					if (Tile::Empty == _gameState.GetTile(i, j))
+					{
+						++emptyTilesCount;
+					}
+
+			return 0 == emptyTilesCount;
 		}
 
 
@@ -153,6 +282,8 @@ namespace TTT
 		//First makes first move, and uses X
 		ClientEntry _firstPlayer;
 		ClientEntry _secondPlayer;
+
+		Result _gameResult;
 
 		TicTackToeGame _gameState;
 	};
