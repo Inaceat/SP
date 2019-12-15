@@ -114,9 +114,6 @@ namespace TTT
 						if (State::InMenu == _clientState)
 						{
 							shouldWork = false;
-
-							//Send deregistration message to server
-							_netController.Send(NetworkMessage(NetworkMessage::Type::ClientDisconnect, ""));
 						}
 					}
 					break;
@@ -206,5 +203,8 @@ namespace TTT
 				delete message;
 			}
 		}
+
+		//Send deregistration message to server
+		_netController.Send(NetworkMessage(NetworkMessage::Type::ClientDisconnect, ""));
 	}
 }
