@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 
+#include "SocketsUDP.hpp"
 #include "NetworkController.hpp"
 
 
@@ -18,9 +19,11 @@ namespace TTT
 		WSACleanup();
 	}
 
+
 	void NetworkController::Start()
 	{
 	}
+
 
 	bool NetworkController::TryFindServerAs(std::string userName, int timeout)
 	{
@@ -43,6 +46,7 @@ namespace TTT
 
 		return true;
 	}
+
 
 	void NetworkController::Send(NetworkMessage message)
 	{

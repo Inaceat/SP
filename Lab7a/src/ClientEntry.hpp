@@ -15,55 +15,25 @@ namespace TTT
 	public:
 		ClientEntry() = default;
 
-		ClientEntry(std::string name, ClientSocketTCP<NetworkMessage>&& connection) :
-			_name(name),
-			_connection(std::move(connection))
-		{}
-
-		ClientEntry(ClientEntry&& other) noexcept
-		{
-			_name = other._name;
-
-			_connection = std::move(other._connection);
-		}
-
-		void operator=(ClientEntry&& other)
-		{
-			if (nullptr == *this)
-			{
-				_name = std::move(other._name);
-				_connection = std::move(other._connection);
-			}
-			else
-				throw std::exception("Nope");//??? really?
-		}
+		ClientEntry(std::string name, ClientSocketTCP<NetworkMessage>&& connection);
 
 
-		NetworkMessage* TryReceive(int timeout)
-		{
-			return _connection.TryReceive(timeout);
-		}
+		ClientEntry(ClientEntry&& other) noexcept;
 
-		void Send(NetworkMessage msg)
-		{
-			_connection.Send(msg);
-		}
-
-		std::string Name() const
-		{
-			return _name;
-		}
+		void operator=(ClientEntry&& other);
 
 
-		friend bool operator==(const std::nullptr_t& null, const ClientEntry& rhs)
-		{
-			return nullptr == rhs._connection;
-		}
+		NetworkMessage* TryReceive(int timeout);
 
-		friend bool operator!=(const std::nullptr_t& null, const ClientEntry& rhs)
-		{
-			return !(null == rhs);
-		}
+		void Send(NetworkMessage msg);
+
+
+		std::string Name() const;
+
+
+		friend bool operator==(const std::nullptr_t& null, const ClientEntry& rhs);
+
+		friend bool operator!=(const std::nullptr_t& null, const ClientEntry& rhs);
 
 
 	private:

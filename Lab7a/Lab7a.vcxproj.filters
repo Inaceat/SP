@@ -66,6 +66,24 @@
     <ClCompile Include="src\InputMessage.cpp">
       <Filter>TTT\Client\GUI\Input</Filter>
     </ClCompile>
+    <ClCompile Include="src\GUIController.cpp">
+      <Filter>TTT\Client\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UserCommand.cpp">
+      <Filter>TTT\Client\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SocketsUtils.cpp">
+      <Filter>TTT\Client\Network\Sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NetworkMessage.cpp">
+      <Filter>TTT\Client\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ClientEntry.cpp">
+      <Filter>TTT\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ServerGameEntry.cpp">
+      <Filter>TTT\Server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
