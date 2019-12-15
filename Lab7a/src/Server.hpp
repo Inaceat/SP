@@ -54,27 +54,44 @@ namespace TTT
 				for (auto client = _registeredClients.begin(); client < _registeredClients.end();)
 				{
 					NetworkMessage* clientMessage = client->TryReceive(receiveTimeout);
-					if (nullptr != clientMessage && NetworkMessage::Type::ClientMMAsk == clientMessage->GetType())
+					if (nullptr != clientMessage)
 					{
-						//If noone waits for game, make client waiting
-						if (nullptr == _queuedClient)
+						switch (clientMessage->GetType())
 						{
-							_queuedClient = std::move(*client);
-						}
-						else//Create game
-						{
-							ServerGameEntry* newGameEntry = new ServerGameEntry(std::move(_queuedClient), std::move(*client));
+							case NetworkMessage::Type::ClientMMAsk:
+							{
+								//If noone waits for game, make client waiting
+								if (nullptr == _queuedClient)
+								{
+									_queuedClient = std::move(*client);
+								}
+								else//Create game
+								{
+									ServerGameEntry* newGameEntry = new ServerGameEntry(std::move(_queuedClient), std::move(*client));
 
-							_activeGames.push_back(newGameEntry);
-						}
+									_activeGames.push_back(newGameEntry);
+								}
 
-						client = _registeredClients.erase(client);
+								client = _registeredClients.erase(client);
+
+							}break;
+
+							case NetworkMessage::Type::ClientDisconnect:
+							{
+								client = _registeredClients.erase(client);
+
+							}break;
+
+							default:
+								++client;//Not in 'for' because of 'erase'
+								break;
+						}
 					}
 					else
-						++client;//Not in 'for' because of 'erase'
+						++client;
 				}
 
-				//Process clients
+				//Process games
 				for (auto game : _activeGames)
 				{
 					game->Update(updateTimeout);

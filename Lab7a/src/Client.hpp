@@ -125,7 +125,7 @@ namespace TTT
 								shouldWork = false;
 
 								//Send deregistration message to server
-								std::cout << "exit" << std::endl;
+								_netController.Send(NetworkMessage(NetworkMessage::Type::ClientDisconnect, ""));
 							}
 						}break;
 
