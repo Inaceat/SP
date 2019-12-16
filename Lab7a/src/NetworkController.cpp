@@ -27,9 +27,57 @@ namespace TTT
 
 	bool NetworkController::TryFindServerAs(std::string userName, int timeout)
 	{
-		ServerSocketTCP<NetworkMessage> connectionCreator("127.0.0.1:42042");//TODO addresses are hard-coded, and would be better to do smth with it
+		//Finding adapter & address
+		char adapterNameSubstr[] =  "thernet";
 
-		BroadcastSenderSocketUDP<NetworkMessage> registrationSender("127.0.0.1:42042", "127.0.0.255:42042");
+
+		//Size of adapters list
+		unsigned long listSize = 0;
+		GetAdaptersAddresses(AF_INET, 0, nullptr, nullptr, &listSize);
+
+		//Getting adapters
+		PIP_ADAPTER_ADDRESSES list = reinterpret_cast<PIP_ADAPTER_ADDRESSES>(new char[listSize]);
+		GetAdaptersAddresses(AF_INET, 0, nullptr, list, &listSize);
+
+		//Buffer for strings
+		const int bufSize = 1024;//Should be enough for everyone
+		char buffer[bufSize];
+		
+		auto currentAddress = list;
+
+		while (nullptr != currentAddress)
+		{
+			//Get current adapter address
+			sockaddr addressInfo = *(currentAddress->FirstUnicastAddress->Address.lpSockaddr);
+
+			//Convert readable adapter name
+			WideCharToMultiByte(CP_ACP, 0, currentAddress->FriendlyName, -1, buffer, bufSize, nullptr, nullptr);
+			
+			//If name contains certain substring
+			if (nullptr != strstr(buffer, adapterNameSubstr))
+			{
+				//Get c-string representation of IP address
+				getnameinfo(&addressInfo, sizeof(sockaddr), buffer, bufSize, nullptr, 0, NI_NUMERICHOST);
+
+				//Stop searching
+				break;
+			}
+
+			currentAddress = currentAddress->Next;
+		}
+
+		delete[] list;
+
+		std::string localIP(buffer);
+
+		std::string localAddress = localIP.append(":").append("42042");
+		std::string targetAddress = localIP.substr(0, localIP.find_last_of(".") + 1).append("255").append(":").append("42042");
+		
+		
+		//Connecting
+		ServerSocketTCP<NetworkMessage> connectionCreator(localAddress);
+
+		BroadcastSenderSocketUDP<NetworkMessage> registrationSender(localAddress, targetAddress);
 
 
 		NetworkMessage registrationMessage(NetworkMessage::Type::ClientConnectionAsk, userName);
