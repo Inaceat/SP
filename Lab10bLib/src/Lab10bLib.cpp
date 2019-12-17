@@ -4,7 +4,7 @@
 #include "stdafx.h"
 
 
-extern "C" __declspec(dllexport) std::string GetStringFromFile(std::string fileName, int positionInFile, int stringLength)
+__declspec(dllexport) std::string GetStringFromFile(std::string fileName, int positionInFile, int stringLength)
 {
 	//Get data from file
 	HANDLE tempSourceFile = CreateFileA(fileName.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
