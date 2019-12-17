@@ -4,3 +4,7 @@
 #include "stdafx.h"
 
 
+extern "C" __declspec(dllexport) void SayMessage(char* cStringMessage)
+{
+	std::cout << cStringMessage << std::endl;
+}
