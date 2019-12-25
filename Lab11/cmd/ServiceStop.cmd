@@ -1,0 +1,2 @@
+sc stop TTTServerLocator
+pause

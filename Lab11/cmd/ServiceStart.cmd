@@ -1,0 +1,2 @@
+sc start TTTServerLocator
+pause
