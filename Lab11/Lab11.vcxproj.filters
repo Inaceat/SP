@@ -13,6 +13,18 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="TTTServer">
+      <UniqueIdentifier>{dc9e1bcb-d3b3-47b3-8c41-e4b701a38e33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TTTServer\Network">
+      <UniqueIdentifier>{6d22bcfc-ad83-4fb2-b5da-d8d887e90e55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TTTServer\Network\Sockets">
+      <UniqueIdentifier>{38b75d4e-4195-45d8-96f5-a6c945983817}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TTTServer\Game">
+      <UniqueIdentifier>{4985586f-130e-41bf-aaac-42db884d7fda}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -21,12 +33,60 @@
     <ClCompile Include="src\Lab11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Server.cpp">
+      <Filter>TTTServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ClientEntry.cpp">
+      <Filter>TTTServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NetworkMessage.cpp">
+      <Filter>TTTServer\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SocketsUtils.cpp">
+      <Filter>TTTServer\Network\Sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TicTackToeGame.cpp">
+      <Filter>TTTServer\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ServerGameEntry.cpp">
+      <Filter>TTTServer\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Server.hpp">
+      <Filter>TTTServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ClientEntry.hpp">
+      <Filter>TTTServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NetworkMessage.hpp">
+      <Filter>TTTServer\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SocketsTCP.hpp">
+      <Filter>TTTServer\Network\Sockets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SocketsUDP.hpp">
+      <Filter>TTTServer\Network\Sockets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SocketsUtils.hpp">
+      <Filter>TTTServer\Network\Sockets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TicTackToeGame.hpp">
+      <Filter>TTTServer\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ServerGameEntry.hpp">
+      <Filter>TTTServer\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Log.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

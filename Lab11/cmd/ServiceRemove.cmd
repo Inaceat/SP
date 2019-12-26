@@ -1,2 +1,2 @@
-sc delete TTTServerLocator
+sc delete TTTServer
 pause
