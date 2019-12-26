@@ -1,3 +1,10 @@
-Reg received from 10.164.145.16:59670
-Client empty!
-Reg received from 10.164.145.16:57380
+Reg received from 10.164.145.16:61522
+Reg received from 10.164.145.16:65376
+Reg received from 10.164.145.16:54009
+Reg received from 10.164.145.16:61017
+Reg received from 10.164.145.16:53454
+Reg received from 10.164.145.16:59819
+Reg received from 10.164.145.16:59820
+Reg received from 10.164.145.16:59821
+Reg received from 10.164.145.16:53884
+Reg received from 10.164.145.16:53249

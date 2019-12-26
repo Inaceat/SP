@@ -30,6 +30,10 @@ namespace TTT
 
 
 	private:
+		bool StartServerService(std::string serviceName);
+
+
+	private:
 		NetworkController _netController;
 		GUIController _guiController;
 

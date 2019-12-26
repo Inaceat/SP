@@ -31,13 +31,44 @@ namespace TTT
 		_userName = _guiController.AskUserName();
 
 		//Try find server
-		const int serverFindTimeout = 1000;
+		const int serverFindTimeout = 2000;
 
 		_guiController.ShowNetworkStatus("Connecting to server...");
 
 		bool serverFound = _netController.TryFindServerAs(_userName, serverFindTimeout);
-
 		if (!serverFound)
+		{
+			bool serverStarted = StartServerService("TTTServer");
+
+			if (!serverStarted)
+			{
+				_guiController.ShowNetworkStatus("Failed to start local server");
+
+				throw std::exception("Can't start server");
+			}
+			else
+			{
+				_guiController.ShowNetworkStatus("Connecting to local server...");
+
+				serverFound = _netController.TryFindServerAs(_userName, serverFindTimeout);
+				if (!serverFound)
+				{
+					_guiController.ShowNetworkStatus("Failed to connect to local server");
+
+					throw std::exception("Can't start server");
+				}
+				else
+				{
+					_guiController.ShowNetworkStatus("Connected to local");
+				}
+			}
+		}
+		else
+		{
+			_guiController.ShowNetworkStatus("Connected");
+		}
+
+		/*if (!serverFound)
 		{
 			_guiController.ShowNetworkStatus("Starting local server...");
 
@@ -63,7 +94,7 @@ namespace TTT
 		else
 		{
 			_guiController.ShowNetworkStatus("Connected");
-		}
+		}*/
 
 
 		//Now we are connected to server, so show menu and start Main Cycle
@@ -206,5 +237,58 @@ namespace TTT
 
 		//Send deregistration message to server
 		_netController.Send(NetworkMessage(NetworkMessage::Type::ClientDisconnect, ""));
+	}
+
+
+	bool Client::StartServerService(std::string serviceName)
+	{
+		char buffer[300];
+		GetCurrentDirectoryA(300, buffer);
+
+		_guiController.ShowNetworkStatus("in " + std::string(buffer));
+
+		std::string serviceBinaryPath = "F:\\Projects\\SP\\x64\\Debug\\Lab11.exe";//Yeah, yeah...
+
+		SC_HANDLE scm = OpenSCManagerA(nullptr, nullptr, SC_MANAGER_ALL_ACCESS);
+		if (nullptr == scm)
+		{
+			_guiController.ShowNetworkStatus("SCM failed to open: " + std::to_string(GetLastError()));
+			return false;
+		}
+
+		SC_HANDLE serverService = OpenServiceA(scm, serviceName.c_str(), SERVICE_START);
+		//If failed to open
+		if (nullptr == serverService)
+		{
+			//If no such service, create one
+			if (ERROR_SERVICE_DOES_NOT_EXIST == GetLastError())
+			{
+				serverService = CreateServiceA(scm, serviceName.c_str(), serviceName.c_str(), 
+					SERVICE_START, SERVICE_WIN32_OWN_PROCESS, SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
+					serviceBinaryPath.c_str(), 
+					nullptr, nullptr, nullptr, nullptr, nullptr);
+
+				if (nullptr == serverService)
+				{
+					_guiController.ShowNetworkStatus("Service failed to create: " + std::to_string(GetLastError()));
+					return false;
+				}
+			}
+			else//panic
+			{
+				_guiController.ShowNetworkStatus("Service failed to open: " + std::to_string(GetLastError()));
+				return false;
+			}
+		}
+
+		//Start service
+		//If failed to start not because of being already running
+		if(!StartServiceA(serverService, 0, nullptr) && ERROR_SERVICE_ALREADY_RUNNING != GetLastError())
+		{
+			_guiController.ShowNetworkStatus("Service failed to start: " + std::to_string(GetLastError()));
+			return false;		
+		}
+		
+		return true;
 	}
 }
